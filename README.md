@@ -105,8 +105,6 @@ habit stats
 
 For an in-depth understanding of the product, architecture, and deployment, please refer to the files in the `docs/` directory:
 - [Architecture Details](docs/developer_habit_tracker_architecture.md)
-- [Product Plan](docs/developer_habit_tracker_product_plan.md)
-- [Publishing Guide](docs/GITHUB_PUBLISHING_GUIDE.md)
 
 ---
 
