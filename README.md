@@ -40,7 +40,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/manojpawar/devhabits.git
+   git clone https://github.com/manoj-9899/devhabits.git
    cd devhabits
    ```
 
