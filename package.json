@@ -1,0 +1,17 @@
+{
+  "name": "devhabits-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root configuration for running DevHabits frontend and backend simultaneously",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "dev": "concurrently -k \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "cli:link": "npm link --prefix backend",
+    "setup": "npm run install:all && npm run cli:link"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+lib-cov
+coverage
+.nyc_output
+
+# Dependency directories
+node_modules/
+jspm_packages/
+.npm
+.eslintcache
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Project specific
+backend/habits.db
+backend/habits.db-journal
+backend/habits.db-wal
+backend/habits.db-shm
+frontend/dist/
+frontend/build/

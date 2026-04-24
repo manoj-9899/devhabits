@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas-default: #0d1117;
+  --color-canvas-subtle: #161b22;
+  --color-canvas-inset: #010409;
+  --color-border-default: #30363d;
+  --color-border-muted: #21262d;
+  --color-fg-default: #e6edf3;
+  --color-fg-muted: #8b949e;
+  --color-fg-subtle: #6e7681;
+  --color-accent-fg: #58a6ff;
+  --color-accent-emphasis: #1f6feb;
+  --color-success-fg: #3fb950;
+  --color-success-emphasis: #238636;
+  --color-danger-fg: #f85149;
+  --color-warning-fg: #d29922;
+  --color-done: #238636;
+  --color-skipped: #388bfd;
+  --color-missed: #da3633;
+  --color-pending: #30363d;
+
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  /* Typography Scale */
+  --text-h1: 32px;
+  --text-h2: 24px;
+  --text-body: 16px;
+  --text-caption: 12px;
+
+  /* Spacing Scale */
+  --spacing-tight: 8px;
+  --spacing-default: 16px;
+  --spacing-section: 24px;
+  --spacing-major: 32px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #0d1117;
+  color: #e6edf3;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  background-color: #0d1117;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid #388bfd;
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background-color: #1f6feb;
+  color: #e6edf3;
+}
+
+/* Monospace utility */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* GitHub-style heatmap cells */
+.heatmap-cell {
+  border-radius: 2px;
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+.heatmap-cell:hover {
+  outline: 1px solid #8b949e;
+  outline-offset: 1px;
+}
