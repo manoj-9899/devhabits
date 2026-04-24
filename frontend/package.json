@@ -1,7 +1,8 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Modern web dashboard for the local-first DevHabits tracker",
   "type": "module",
   "scripts": {
     "dev": "vite",

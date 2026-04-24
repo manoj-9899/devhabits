@@ -36,7 +36,7 @@ Before you begin, ensure you have the following free tools installed on your mac
 Open your terminal and download the repository to your computer:
 
 ```bash
-git clone https://github.com/yourusername/devhabits.git
+git clone https://github.com/manojpawar/devhabits.git
 cd "devhabits"
 ```
 
