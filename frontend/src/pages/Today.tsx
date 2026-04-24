@@ -21,22 +21,23 @@ export function Today() {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [filter, setFilter] = useState<'ALL' | LogState>('ALL');
 
-  const habits  = data?.habits ?? [];
+  const habits = data?.habits ?? [];
   const summary = data?.summary;
 
-  const filtered = filter === 'ALL'
-    ? habits
-    : habits.filter(h => h.today_state === filter);
+  const filtered = filter === 'ALL' ? habits : habits.filter((h) => h.today_state === filter);
 
   const sorted = [...filtered].sort(
     (a, b) => STATE_ORDER[a.today_state] - STATE_ORDER[b.today_state]
   );
 
   // ── Keyboard navigation ────────────────────────────────────────────────────
-  const logFocused = useCallback((state: 'DONE' | 'SKIPPED' | 'MISSED') => {
-    const focused = sorted[focusedIndex];
-    if (focused) logHabit({ habit_id: focused.id, state, source: 'WEB' });
-  }, [sorted, focusedIndex, logHabit]);
+  const logFocused = useCallback(
+    (state: 'DONE' | 'SKIPPED' | 'MISSED') => {
+      const focused = sorted[focusedIndex];
+      if (focused) logHabit({ habit_id: focused.id, state, source: 'WEB' });
+    },
+    [sorted, focusedIndex, logHabit]
+  );
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -45,11 +46,11 @@ export function Today() {
 
       if (e.key === 'j' || e.key === 'ArrowDown') {
         e.preventDefault();
-        setFocusedIndex(i => Math.min(i + 1, sorted.length - 1));
+        setFocusedIndex((i) => Math.min(i + 1, sorted.length - 1));
       }
       if (e.key === 'k' || e.key === 'ArrowUp') {
         e.preventDefault();
-        setFocusedIndex(i => Math.max(i - 1, 0));
+        setFocusedIndex((i) => Math.max(i - 1, 0));
       }
       if (e.key === 'd' || e.key === 'D') logFocused('DONE');
       if (e.key === 's' || e.key === 'S') logFocused('SKIPPED');
@@ -68,7 +69,7 @@ export function Today() {
           <div>
             <h1 className="text-[32px] font-bold text-[#e6edf3] tracking-tight">Today</h1>
             <p className="text-sm text-[#8b949e] mt-1 font-mono">
-              {format(new Date(), "EEEE, MMM d")}
+              {format(new Date(), 'EEEE, MMM d')}
             </p>
           </div>
           <Button variant="ghost" size="sm" onClick={() => refetch()} title="Refresh (R)">
@@ -91,11 +92,12 @@ export function Today() {
                 className="h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(0,0,0,0.5)]"
                 style={{
                   width: `${summary.completion_pct}%`,
-                  backgroundColor: summary.completion_pct >= 80
-                    ? '#238636'
-                    : summary.completion_pct >= 50
-                    ? '#d29922'
-                    : '#388bfd',
+                  backgroundColor:
+                    summary.completion_pct >= 80
+                      ? '#238636'
+                      : summary.completion_pct >= 50
+                        ? '#d29922'
+                        : '#388bfd',
                 }}
               />
             </div>
@@ -108,7 +110,10 @@ export function Today() {
         {isLoading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-16 bg-[#161b22] rounded-lg border border-[#30363d] animate-pulse" />
+              <div
+                key={i}
+                className="h-16 bg-[#161b22] rounded-lg border border-[#30363d] animate-pulse"
+              />
             ))}
           </div>
         ) : sorted.length === 0 ? (
@@ -118,7 +123,10 @@ export function Today() {
                 <div className="text-5xl mb-2 opacity-80">🌱</div>
                 <div>
                   <h3 className="text-lg font-semibold text-[#e6edf3]">No habits yet</h3>
-                  <p className="text-sm text-[#8b949e] mt-1 mb-4 max-w-xs">Start building your routine today. Create your first habit to track your progress.</p>
+                  <p className="text-sm text-[#8b949e] mt-1 mb-4 max-w-xs">
+                    Start building your routine today. Create your first habit to track your
+                    progress.
+                  </p>
                 </div>
                 <Button variant="primary" size="md" onClick={openAddHabit}>
                   + Create your first habit
@@ -129,7 +137,9 @@ export function Today() {
                 <div className="text-5xl mb-2 opacity-80">🎉</div>
                 <div>
                   <h3 className="text-lg font-semibold text-[#e6edf3]">All caught up!</h3>
-                  <p className="text-sm text-[#8b949e] mt-1">You've completed all your {filter.toLowerCase()} habits.</p>
+                  <p className="text-sm text-[#8b949e] mt-1">
+                    You've completed all your {filter.toLowerCase()} habits.
+                  </p>
                 </div>
               </>
             )}
@@ -137,12 +147,7 @@ export function Today() {
         ) : (
           <div className="space-y-3">
             {sorted.map((habit, i) => (
-              <HabitCard
-                key={habit.id}
-                habit={habit}
-                index={i}
-                focused={i === focusedIndex}
-              />
+              <HabitCard key={habit.id} habit={habit} index={i} focused={i === focusedIndex} />
             ))}
           </div>
         )}
@@ -152,10 +157,13 @@ export function Today() {
       <div className="pt-4 border-t border-[#30363d] flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Filter tabs */}
         <div className="flex items-center gap-1 p-1 bg-[#161b22] rounded-lg border border-[#30363d] w-fit">
-          {(['ALL', 'PENDING', 'DONE', 'SKIPPED', 'MISSED'] as const).map(f => (
+          {(['ALL', 'PENDING', 'DONE', 'SKIPPED', 'MISSED'] as const).map((f) => (
             <button
               key={f}
-              onClick={() => { setFilter(f); setFocusedIndex(0); }}
+              onClick={() => {
+                setFilter(f);
+                setFocusedIndex(0);
+              }}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
                 filter === f
                   ? 'bg-[#21262d] text-[#e6edf3] shadow-sm'
@@ -164,18 +172,25 @@ export function Today() {
             >
               {f === 'ALL'
                 ? `All ${summary ? `(${summary.total})` : ''}`
-                : f.charAt(0) + f.slice(1).toLowerCase()
-              }
+                : f.charAt(0) + f.slice(1).toLowerCase()}
             </button>
           ))}
         </div>
 
         {/* Keyboard hints */}
         <div className="flex gap-4 text-[11px] text-[#6e7681] font-mono border border-[#21262d] rounded-md px-3 py-2 bg-[#161b22]/50">
-          <span><span className="text-[#8b949e]">J/K</span> nav</span>
-          <span><span className="text-[#8b949e]">D</span> done</span>
-          <span><span className="text-[#8b949e]">S</span> skip</span>
-          <span><span className="text-[#8b949e]">M</span> miss</span>
+          <span>
+            <span className="text-[#8b949e]">J/K</span> nav
+          </span>
+          <span>
+            <span className="text-[#8b949e]">D</span> done
+          </span>
+          <span>
+            <span className="text-[#8b949e]">S</span> skip
+          </span>
+          <span>
+            <span className="text-[#8b949e]">M</span> miss
+          </span>
         </div>
       </div>
     </div>
@@ -184,7 +199,8 @@ export function Today() {
 
 const RefreshIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+    <polyline points="23 4 23 10 17 10" />
+    <polyline points="1 20 1 14 7 14" />
     <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
   </svg>
 );

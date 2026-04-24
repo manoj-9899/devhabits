@@ -21,9 +21,13 @@ import { getToday, subtractDays } from '../utils/date.js';
  * @returns {Set<string>}
  */
 function getAbsenceDates() {
-  const absences = db.prepare(`
+  const absences = db
+    .prepare(
+      `
     SELECT start_date, end_date FROM planned_absences
-  `).all();
+  `
+    )
+    .all();
 
   const absenceDates = new Set();
 
@@ -55,12 +59,16 @@ function getAbsenceDates() {
  */
 export function calculateStreak(habitId) {
   // All logs ordered newest → oldest
-  const logs = db.prepare(`
+  const logs = db
+    .prepare(
+      `
     SELECT date, state
     FROM   logs
     WHERE  habit_id = ?
     ORDER  BY date DESC
-  `).all(habitId);
+  `
+    )
+    .all(habitId);
 
   if (logs.length === 0) {
     return { current_streak: 0, best_streak: 0 };
@@ -131,12 +139,10 @@ export function calculateStreak(habitId) {
           const dayDiff = daysBetween(prevDone.date, date);
 
           // Count SKIPPED days + absence days between the two DONE days
-          const skippedBetween = logsAsc
-            .slice(0, i)
-            .filter((l) => {
-              const d = l.date;
-              return d > prevDone.date && d < date && (l.state === 'SKIPPED' || absenceDates.has(d));
-            }).length;
+          const skippedBetween = logsAsc.slice(0, i).filter((l) => {
+            const d = l.date;
+            return d > prevDone.date && d < date && (l.state === 'SKIPPED' || absenceDates.has(d));
+          }).length;
 
           const effectiveGap = dayDiff - skippedBetween;
 

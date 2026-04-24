@@ -83,8 +83,8 @@ const schema = `
 try {
   db.exec(schema);
   if (!process.env.CLI_MODE) {
-  console.log('[db] Schema applied successfully.');
-}
+    console.log('[db] Schema applied successfully.');
+  }
 } catch (err) {
   console.error('[db] Migration failed:', err.message);
   process.exit(1);

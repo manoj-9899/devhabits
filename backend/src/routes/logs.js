@@ -16,7 +16,7 @@ import { getToday, validateDate } from '../utils/date.js';
 const router = Router();
 
 // ── Validation ─────────────────────────────────────────────────────────────
-const VALID_STATES  = ['DONE', 'SKIPPED', 'MISSED'];
+const VALID_STATES = ['DONE', 'SKIPPED', 'MISSED'];
 const VALID_SOURCES = ['CLI', 'WEB', 'API', 'VSCODE'];
 
 // ── POST /api/logs ────────────────────────────────────────────────────────────
@@ -31,56 +31,65 @@ const VALID_SOURCES = ['CLI', 'WEB', 'API', 'VSCODE'];
 // }
 //
 // Response includes recalculated streak so the UI can update instantly.
-router.post('/', asyncHandler((req, res) => {
-  const { habit_id, state, date, source, metadata } = req.body;
+router.post(
+  '/',
+  asyncHandler((req, res) => {
+    const { habit_id, state, date, source, metadata } = req.body;
 
-  // ── Validate input ────────────────────────────────────────────────────────
-  if (!habit_id || typeof habit_id !== 'string') {
-    throw createError(400, 'HABIT_ID_REQUIRED', 'habit_id is required.');
-  }
+    // ── Validate input ────────────────────────────────────────────────────────
+    if (!habit_id || typeof habit_id !== 'string') {
+      throw createError(400, 'HABIT_ID_REQUIRED', 'habit_id is required.');
+    }
 
-  if (!state || !VALID_STATES.includes(state)) {
-    throw createError(400, 'INVALID_STATE',
-      `state must be one of: ${VALID_STATES.join(', ')}.`);
-  }
+    if (!state || !VALID_STATES.includes(state)) {
+      throw createError(400, 'INVALID_STATE', `state must be one of: ${VALID_STATES.join(', ')}.`);
+    }
 
-  if (source && !VALID_SOURCES.includes(source)) {
-    throw createError(400, 'INVALID_SOURCE',
-      `source must be one of: ${VALID_SOURCES.join(', ')}.`);
-  }
+    if (source && !VALID_SOURCES.includes(source)) {
+      throw createError(
+        400,
+        'INVALID_SOURCE',
+        `source must be one of: ${VALID_SOURCES.join(', ')}.`
+      );
+    }
 
-  // Resolve and validate date
-  const logDate = date ? validateDate(date) : getToday();
+    // Resolve and validate date
+    const logDate = date ? validateDate(date) : getToday();
 
-  // Don't allow logging future dates
-  if (logDate > getToday()) {
-    throw createError(400, 'FUTURE_DATE', 'Cannot log habits for future dates.');
-  }
+    // Don't allow logging future dates
+    if (logDate > getToday()) {
+      throw createError(400, 'FUTURE_DATE', 'Cannot log habits for future dates.');
+    }
 
-  // Verify habit exists
-  const habit = getHabitById(habit_id);
-  if (!habit) {
-    return sendError(res, `Habit "${habit_id}" not found.`, 404, 'NOT_FOUND');
-  }
+    // Verify habit exists
+    const habit = getHabitById(habit_id);
+    if (!habit) {
+      return sendError(res, `Habit "${habit_id}" not found.`, 404, 'NOT_FOUND');
+    }
 
-  // ── Write the log ─────────────────────────────────────────────────────────
-  const log = upsertLogEntry({
-    habit_id,
-    date:     logDate,
-    state,
-    source:   source   ?? 'API',
-    metadata: metadata ?? {},
-  });
+    // ── Write the log ─────────────────────────────────────────────────────────
+    const log = upsertLogEntry({
+      habit_id,
+      date: logDate,
+      state,
+      source: source ?? 'API',
+      metadata: metadata ?? {},
+    });
 
-  // Recalculate streak after every write — it's cheap enough
-  const streaks = calculateStreak(habit_id);
+    // Recalculate streak after every write — it's cheap enough
+    const streaks = calculateStreak(habit_id);
 
-  sendSuccess(res, {
-    log,
-    ...streaks,
-    habit_name: habit.name,
-  }, 201);
-}));
+    sendSuccess(
+      res,
+      {
+        log,
+        ...streaks,
+        habit_name: habit.name,
+      },
+      201
+    );
+  })
+);
 
 // ── GET /api/logs/today ───────────────────────────────────────────────────────
 // Returns every active habit with its log state for today.
@@ -88,43 +97,47 @@ router.post('/', asyncHandler((req, res) => {
 //
 // Query params:
 //   ?date=YYYY-MM-DD  → override the date (for retroactive editing)
-router.get('/today', asyncHandler((req, res) => {
-  const date = req.query.date ? validateDate(req.query.date) : getToday();
-  const habits = getTodayHabits(date);
+router.get(
+  '/today',
+  asyncHandler((req, res) => {
+    const date = req.query.date ? validateDate(req.query.date) : getToday();
+    const habits = getTodayHabits(date);
 
-  const pending = habits.filter((h) => h.today_state === 'PENDING').length;
-  const done    = habits.filter((h) => h.today_state === 'DONE').length;
+    const pending = habits.filter((h) => h.today_state === 'PENDING').length;
+    const done = habits.filter((h) => h.today_state === 'DONE').length;
 
-  sendSuccess(res, {
-    date,
-    habits,
-    summary: {
-      total:   habits.length,
-      pending,
-      done,
-      skipped: habits.filter((h) => h.today_state === 'SKIPPED').length,
-      missed:  habits.filter((h) => h.today_state === 'MISSED').length,
-      completion_pct: habits.length > 0
-        ? Math.round((done / habits.length) * 100)
-        : 0,
-    },
-  });
-}));
+    sendSuccess(res, {
+      date,
+      habits,
+      summary: {
+        total: habits.length,
+        pending,
+        done,
+        skipped: habits.filter((h) => h.today_state === 'SKIPPED').length,
+        missed: habits.filter((h) => h.today_state === 'MISSED').length,
+        completion_pct: habits.length > 0 ? Math.round((done / habits.length) * 100) : 0,
+      },
+    });
+  })
+);
 
 // ── GET /api/logs/habit/:habitId ──────────────────────────────────────────────
 // Returns the complete log history for one habit.
 // Used by the "History" drawer/view in the UI.
-router.get('/habit/:habitId', asyncHandler((req, res) => {
-  const habit = getHabitById(req.params.habitId);
+router.get(
+  '/habit/:habitId',
+  asyncHandler((req, res) => {
+    const habit = getHabitById(req.params.habitId);
 
-  if (!habit) {
-    return sendError(res, `Habit "${req.params.habitId}" not found.`, 404, 'NOT_FOUND');
-  }
+    if (!habit) {
+      return sendError(res, `Habit "${req.params.habitId}" not found.`, 404, 'NOT_FOUND');
+    }
 
-  const logs    = getLogsByHabit(req.params.habitId);
-  const streaks = calculateStreak(req.params.habitId);
+    const logs = getLogsByHabit(req.params.habitId);
+    const streaks = calculateStreak(req.params.habitId);
 
-  sendSuccess(res, { habit, logs, ...streaks });
-}));
+    sendSuccess(res, { habit, logs, ...streaks });
+  })
+);
 
 export default router;

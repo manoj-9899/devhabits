@@ -5,17 +5,35 @@ import { useCreateHabit } from '../hooks/index';
 import { useUIStore } from '../store/uiStore';
 import type { CreateHabitDto, FrequencyType } from '../types';
 
-const CATEGORIES  = ['General', 'Coding', 'Health', 'Reading', 'Learning', 'Fitness', 'Writing', 'Other'];
+const CATEGORIES = [
+  'General',
+  'Coding',
+  'Health',
+  'Reading',
+  'Learning',
+  'Fitness',
+  'Writing',
+  'Other',
+];
 const FREQUENCIES: FrequencyType[] = ['DAILY', 'WEEKLY', 'INTERVAL'];
-const COLORS = ['#238636', '#388bfd', '#8957e5', '#db61a2', '#39c5cf', '#58a6ff', '#0ea5e9', '#64748b'];
+const COLORS = [
+  '#238636',
+  '#388bfd',
+  '#8957e5',
+  '#db61a2',
+  '#39c5cf',
+  '#58a6ff',
+  '#0ea5e9',
+  '#64748b',
+];
 
 const DEFAULT_FORM: CreateHabitDto = {
-  name:           '',
-  description:    '',
-  category:       'General',
-  color:          '#238636',
+  name: '',
+  description: '',
+  category: 'General',
+  color: '#238636',
   frequency_type: 'DAILY',
-  interval_days:  undefined,
+  interval_days: undefined,
 };
 
 export function AddHabitModal() {
@@ -33,13 +51,14 @@ export function AddHabitModal() {
 
   // Close on Escape
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') closeAddHabit(); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeAddHabit();
+    };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [closeAddHabit]);
 
-  const set = (k: keyof CreateHabitDto, v: any) =>
-    setForm(prev => ({ ...prev, [k]: v }));
+  const set = (k: keyof CreateHabitDto, v: any) => setForm((prev) => ({ ...prev, [k]: v }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,10 +71,7 @@ export function AddHabitModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={closeAddHabit}
-      />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeAddHabit} />
 
       {/* Modal */}
       <div className="relative w-full max-w-md bg-[#161b22] border border-[#30363d] rounded-xl shadow-2xl">
@@ -69,7 +85,14 @@ export function AddHabitModal() {
             onClick={closeAddHabit}
             className="text-[#8b949e] hover:text-[#e6edf3] transition-colors p-1 rounded cursor-pointer"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
           </button>
@@ -86,7 +109,7 @@ export function AddHabitModal() {
               ref={nameRef}
               type="text"
               value={form.name}
-              onChange={e => set('name', e.target.value)}
+              onChange={(e) => set('name', e.target.value)}
               placeholder="e.g. DSA Practice"
               className="w-full px-3 py-2 bg-[#0d1117] border border-[#30363d] rounded-md text-sm text-[#e6edf3] placeholder-[#484f58] focus:outline-none focus:border-[#388bfd] transition-colors"
               required
@@ -101,7 +124,7 @@ export function AddHabitModal() {
             <input
               type="text"
               value={form.description}
-              onChange={e => set('description', e.target.value)}
+              onChange={(e) => set('description', e.target.value)}
               placeholder="Optional note"
               className="w-full px-3 py-2 bg-[#0d1117] border border-[#30363d] rounded-md text-sm text-[#e6edf3] placeholder-[#484f58] focus:outline-none focus:border-[#388bfd] transition-colors"
             />
@@ -115,10 +138,14 @@ export function AddHabitModal() {
               </label>
               <select
                 value={form.category}
-                onChange={e => set('category', e.target.value)}
+                onChange={(e) => set('category', e.target.value)}
                 className="w-full px-3 py-2 bg-[#0d1117] border border-[#30363d] rounded-md text-sm text-[#e6edf3] focus:outline-none focus:border-[#388bfd] transition-colors cursor-pointer"
               >
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -127,10 +154,14 @@ export function AddHabitModal() {
               </label>
               <select
                 value={form.frequency_type}
-                onChange={e => set('frequency_type', e.target.value as FrequencyType)}
+                onChange={(e) => set('frequency_type', e.target.value as FrequencyType)}
                 className="w-full px-3 py-2 bg-[#0d1117] border border-[#30363d] rounded-md text-sm text-[#e6edf3] focus:outline-none focus:border-[#388bfd] transition-colors cursor-pointer"
               >
-                {FREQUENCIES.map(f => <option key={f} value={f}>{f}</option>)}
+                {FREQUENCIES.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -146,7 +177,7 @@ export function AddHabitModal() {
                 min={1}
                 max={30}
                 value={form.interval_days ?? ''}
-                onChange={e => set('interval_days', Number(e.target.value))}
+                onChange={(e) => set('interval_days', Number(e.target.value))}
                 placeholder="e.g. 3"
                 className="w-full px-3 py-2 bg-[#0d1117] border border-[#30363d] rounded-md text-sm text-[#e6edf3] placeholder-[#484f58] focus:outline-none focus:border-[#388bfd] transition-colors"
                 required
@@ -160,7 +191,7 @@ export function AddHabitModal() {
               Color
             </label>
             <div className="flex gap-2 flex-wrap">
-              {COLORS.map(c => (
+              {COLORS.map((c) => (
                 <button
                   key={c}
                   type="button"

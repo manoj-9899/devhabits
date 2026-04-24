@@ -5,7 +5,7 @@ import { analyticsApi } from '../api/index';
 export function useHeatmap(days = 365) {
   return useQuery({
     queryKey: ['analytics', 'heatmap', days],
-    queryFn:  () => analyticsApi.getHeatmap(days),
+    queryFn: () => analyticsApi.getHeatmap(days),
     staleTime: 60_000,
   });
 }
@@ -13,7 +13,7 @@ export function useHeatmap(days = 365) {
 export function useStats() {
   return useQuery({
     queryKey: ['analytics', 'stats'],
-    queryFn:  () => analyticsApi.getStats(),
+    queryFn: () => analyticsApi.getStats(),
     staleTime: 30_000,
   });
 }

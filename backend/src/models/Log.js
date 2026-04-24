@@ -98,8 +98,8 @@ export function upsertLogEntry(data) {
     data.habit_id,
     data.date,
     data.state,
-    data.source   ?? 'API',
-    JSON.stringify(data.metadata ?? {}),
+    data.source ?? 'API',
+    JSON.stringify(data.metadata ?? {})
   );
   return deserialize(findOne.get(data.habit_id, data.date));
 }
@@ -111,7 +111,7 @@ export function upsertLogEntry(data) {
 export function getTodayHabits(date) {
   return findTodayWithHabits.all(date).map((row) => ({
     ...row,
-    log_metadata:       row.log_metadata ? JSON.parse(row.log_metadata) : {},
+    log_metadata: row.log_metadata ? JSON.parse(row.log_metadata) : {},
     skip_breaks_streak: Boolean(row.skip_breaks_streak),
   }));
 }

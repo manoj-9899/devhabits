@@ -20,12 +20,13 @@ export function Habits() {
 
   const habits = data?.habits ?? [];
 
-  const categories = ['All', ...Array.from(new Set(habits.map(h => h.category)))];
+  const categories = ['All', ...Array.from(new Set(habits.map((h) => h.category)))];
 
-  const filtered = habits.filter(h => {
-    const matchSearch = h.name.toLowerCase().includes(search.toLowerCase()) ||
-                        h.category.toLowerCase().includes(search.toLowerCase());
-    const matchCat    = categoryFilter === 'All' || h.category === categoryFilter;
+  const filtered = habits.filter((h) => {
+    const matchSearch =
+      h.name.toLowerCase().includes(search.toLowerCase()) ||
+      h.category.toLowerCase().includes(search.toLowerCase());
+    const matchCat = categoryFilter === 'All' || h.category === categoryFilter;
     return matchSearch && matchCat;
   });
 
@@ -50,15 +51,20 @@ export function Habits() {
         <div className="relative flex-1 min-w-48">
           <svg
             className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]"
-            width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
           >
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
           </svg>
           <input
             type="text"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search habits..."
             className="w-full pl-9 pr-3 py-1.5 bg-[#161b22] border border-[#30363d] rounded-md text-sm text-[#e6edf3] placeholder-[#484f58] focus:outline-none focus:border-[#388bfd] transition-colors"
           />
@@ -66,7 +72,7 @@ export function Habits() {
 
         {/* Category pills */}
         <div className="flex gap-1.5 flex-wrap">
-          {categories.map(c => (
+          {categories.map((c) => (
             <button
               key={c}
               onClick={() => setCategoryFilter(c)}
@@ -97,7 +103,10 @@ export function Habits() {
       {isLoading ? (
         <div className="space-y-2">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-14 bg-[#161b22] rounded-lg border border-[#30363d] animate-pulse" />
+            <div
+              key={i}
+              className="h-14 bg-[#161b22] rounded-lg border border-[#30363d] animate-pulse"
+            />
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -106,7 +115,9 @@ export function Habits() {
             <>
               <div className="text-5xl">🌱</div>
               <p className="text-sm text-[#8b949e]">No habits yet. Start building consistency.</p>
-              <Button variant="primary" onClick={openAddHabit}>Add your first habit</Button>
+              <Button variant="primary" onClick={openAddHabit}>
+                Add your first habit
+              </Button>
             </>
           ) : (
             <p className="text-sm text-[#8b949e]">No habits match your filter.</p>
@@ -114,7 +125,7 @@ export function Habits() {
         </div>
       ) : (
         <div className="space-y-1.5">
-          {filtered.map(habit => (
+          {filtered.map((habit) => (
             <HabitRow
               key={habit.id}
               habit={habit}
@@ -129,7 +140,7 @@ export function Habits() {
 }
 
 interface HabitRowProps {
-  habit:     Habit;
+  habit: Habit;
   onArchive: () => void;
   archiving: boolean;
 }
@@ -141,7 +152,10 @@ function HabitRow({ habit, onArchive, archiving }: HabitRowProps) {
     <div className="group grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-4 py-3 bg-[#0d1117] hover:bg-[#161b22] border border-[#30363d] hover:border-[#484f58] rounded-lg transition-all duration-100">
       {/* Name + category */}
       <div className="flex items-center gap-3 min-w-0">
-        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: habit.color }} />
+        <div
+          className="w-2.5 h-2.5 rounded-full shrink-0"
+          style={{ backgroundColor: habit.color }}
+        />
         <div className="min-w-0">
           <div className="text-sm font-medium text-[#e6edf3] truncate">{habit.name}</div>
           {habit.description && (
@@ -167,9 +181,7 @@ function HabitRow({ habit, onArchive, archiving }: HabitRowProps) {
 
       {/* Best streak */}
       <div className="text-center">
-        <div className="text-sm font-bold font-mono text-[#e6edf3]">
-          {habit.best_streak ?? 0}
-        </div>
+        <div className="text-sm font-bold font-mono text-[#e6edf3]">{habit.best_streak ?? 0}</div>
         <div className="text-[10px] text-[#6e7681]">best</div>
       </div>
 
@@ -185,7 +197,10 @@ function HabitRow({ habit, onArchive, archiving }: HabitRowProps) {
               Confirm
             </button>
             <span className="text-[#30363d]">·</span>
-            <button onClick={() => setConfirm(false)} className="text-[11px] text-[#8b949e] hover:underline cursor-pointer">
+            <button
+              onClick={() => setConfirm(false)}
+              className="text-[11px] text-[#8b949e] hover:underline cursor-pointer"
+            >
               Cancel
             </button>
           </div>
@@ -204,14 +219,22 @@ function HabitRow({ habit, onArchive, archiving }: HabitRowProps) {
 }
 
 const PlusIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+  >
     <path d="M12 5v14M5 12h14" />
   </svg>
 );
 
 const ArchiveIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="21 8 21 21 3 21 3 8" /><rect x="1" y="3" width="22" height="5" />
+    <polyline points="21 8 21 21 3 21 3 8" />
+    <rect x="1" y="3" width="22" height="5" />
     <line x1="10" y1="12" x2="14" y2="12" />
   </svg>
 );

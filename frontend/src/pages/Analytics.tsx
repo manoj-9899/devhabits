@@ -12,23 +12,28 @@ type HeatmapRange = 90 | 180 | 365;
 export function Analytics() {
   const [heatmapDays, setHeatmapDays] = useState<HeatmapRange>(365);
   const { data: heatmap, isLoading: heatmapLoading } = useHeatmap(heatmapDays);
-  const { data: stats,   isLoading: statsLoading   } = useStats();
+  const { data: stats, isLoading: statsLoading } = useStats();
 
   const habits = stats?.habits ?? [];
 
   // Top-level aggregates
-  const totalDone     = habits.reduce((sum, h) => sum + h.total_done, 0);
-  const avgCompletion = habits.length > 0
-    ? Math.round(habits.reduce((sum, h) => sum + (h.completion_pct ?? 0), 0) / habits.length)
-    : 0;
-  const bestStreak    = Math.max(...habits.map(h => h.best_streak), 0);
-  
+  const totalDone = habits.reduce((sum, h) => sum + h.total_done, 0);
+  const avgCompletion =
+    habits.length > 0
+      ? Math.round(habits.reduce((sum, h) => sum + (h.completion_pct ?? 0), 0) / habits.length)
+      : 0;
+  const bestStreak = Math.max(...habits.map((h) => h.best_streak), 0);
+
   // Sort habits by completion and streak
-  const sortedBySuccess = [...habits].sort((a, b) => 
-    ((b.completion_pct ?? 0) * 100 + b.current_streak) - ((a.completion_pct ?? 0) * 100 + a.current_streak)
+  const sortedBySuccess = [...habits].sort(
+    (a, b) =>
+      (b.completion_pct ?? 0) * 100 +
+      b.current_streak -
+      ((a.completion_pct ?? 0) * 100 + a.current_streak)
   );
   const topHabit = sortedBySuccess[0];
-  const worstHabit = sortedBySuccess.length > 1 ? sortedBySuccess[sortedBySuccess.length - 1] : undefined;
+  const worstHabit =
+    sortedBySuccess.length > 1 ? sortedBySuccess[sortedBySuccess.length - 1] : undefined;
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-10">
@@ -41,7 +46,11 @@ export function Analytics() {
       {/* Global stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <StatsCard label="Completions" value={totalDone} mono accent="#3fb950" />
-        <StatsCard label="Average Rate" value={`${avgCompletion}%`} sub="per habit" mono
+        <StatsCard
+          label="Average Rate"
+          value={`${avgCompletion}%`}
+          sub="per habit"
+          mono
           accent={avgCompletion >= 70 ? '#3fb950' : avgCompletion >= 40 ? '#d29922' : '#da3633'}
         />
         <StatsCard label="Best Streak" value={bestStreak} sub="days" mono accent="#58a6ff" />
@@ -67,7 +76,7 @@ export function Analytics() {
           </div>
           {/* Range picker */}
           <div className="flex gap-1 p-1 bg-[#161b22] rounded-md border border-[#30363d]">
-            {([90, 180, 365] as HeatmapRange[]).map(d => (
+            {([90, 180, 365] as HeatmapRange[]).map((d) => (
               <button
                 key={d}
                 onClick={() => setHeatmapDays(d)}
@@ -99,7 +108,10 @@ export function Analytics() {
         {statsLoading ? (
           <div className="space-y-2">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-24 bg-[#161b22] rounded-lg border border-[#30363d] animate-pulse" />
+              <div
+                key={i}
+                className="h-24 bg-[#161b22] rounded-lg border border-[#30363d] animate-pulse"
+              />
             ))}
           </div>
         ) : habits.length === 0 ? (
@@ -110,7 +122,7 @@ export function Analytics() {
           <>
             {/* Streak cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-              {habits.map(h => (
+              {habits.map((h) => (
                 <StreakCard
                   key={h.id}
                   name={h.name}
@@ -138,13 +150,20 @@ export function Analytics() {
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: h.color }} />
+                    <div
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ backgroundColor: h.color }}
+                    />
                     <span className="text-sm text-[#e6edf3] truncate">{h.name}</span>
                     <span className="text-xs text-[#8b949e]">· {h.category}</span>
                   </div>
 
-                  <span className="text-sm font-mono text-[#3fb950] text-right">{h.total_done}</span>
-                  <span className="text-sm font-mono text-[#8b949e] text-right">{h.total_eligible}</span>
+                  <span className="text-sm font-mono text-[#3fb950] text-right">
+                    {h.total_done}
+                  </span>
+                  <span className="text-sm font-mono text-[#8b949e] text-right">
+                    {h.total_eligible}
+                  </span>
 
                   <div className="flex items-center gap-2 justify-end">
                     {/* Mini bar */}
@@ -153,11 +172,12 @@ export function Analytics() {
                         className="h-full rounded-full"
                         style={{
                           width: `${h.completion_pct ?? 0}%`,
-                          backgroundColor: (h.completion_pct ?? 0) >= 70
-                            ? '#238636'
-                            : (h.completion_pct ?? 0) >= 40
-                            ? '#d29922'
-                            : '#da3633',
+                          backgroundColor:
+                            (h.completion_pct ?? 0) >= 70
+                              ? '#238636'
+                              : (h.completion_pct ?? 0) >= 40
+                                ? '#d29922'
+                                : '#da3633',
                         }}
                       />
                     </div>

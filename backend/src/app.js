@@ -7,19 +7,21 @@
 import express from 'express';
 import cors from 'cors';
 
-import habitsRouter    from './routes/habits.js';
-import logsRouter      from './routes/logs.js';
+import habitsRouter from './routes/habits.js';
+import logsRouter from './routes/logs.js';
 import analyticsRouter from './routes/analytics.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
 // ── Middleware ─────────────────────────────────────────────────────────────
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4224'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4224'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 app.use(express.json({ limit: '1mb' }));
 
@@ -33,8 +35,8 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── API Routes ─────────────────────────────────────────────────────────────
-app.use('/api/habits',    habitsRouter);
-app.use('/api/logs',      logsRouter);
+app.use('/api/habits', habitsRouter);
+app.use('/api/logs', logsRouter);
 app.use('/api/analytics', analyticsRouter);
 
 // ── 404 handler ────────────────────────────────────────────────────────────

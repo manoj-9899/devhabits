@@ -27,7 +27,8 @@ export function asyncHandler(fn) {
  * @param {import('express').Response} res
  * @param {Function} next
  */
-export function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-vars
+export function errorHandler(err, req, res, next) {
+  // eslint-disable-line no-unused-vars
   console.error(`[error] ${req.method} ${req.path} →`, err.message);
 
   // SQLite constraint violations (e.g. CHECK constraint on state field)
@@ -53,10 +54,8 @@ export function errorHandler(err, req, res, next) { // eslint-disable-line no-un
   res.status(500).json({
     status: 'error',
     error: {
-      code:    'INTERNAL_ERROR',
-      message: process.env.NODE_ENV === 'production'
-        ? 'An internal error occurred.'
-        : err.message,
+      code: 'INTERNAL_ERROR',
+      message: process.env.NODE_ENV === 'production' ? 'An internal error occurred.' : err.message,
     },
   });
 }

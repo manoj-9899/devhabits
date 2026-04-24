@@ -10,15 +10,15 @@ import { useLogHabit } from '../hooks/index';
 import type { TodayHabit, LogState } from '../types';
 
 interface HabitCardProps {
-  habit:     TodayHabit;
-  index?:    number; // for keyboard shortcut hint
-  focused?:  boolean;
+  habit: TodayHabit;
+  index?: number; // for keyboard shortcut hint
+  focused?: boolean;
 }
 
 const STATE_BORDER: Record<LogState, string> = {
-  DONE:    'border-[#238636]/60 bg-[#0d1117]',
+  DONE: 'border-[#238636]/60 bg-[#0d1117]',
   SKIPPED: 'border-[#388bfd]/40 bg-[#0d1117]',
-  MISSED:  'border-[#da3633]/40 bg-[#0d1117]',
+  MISSED: 'border-[#da3633]/40 bg-[#0d1117]',
   PENDING: 'border-[#30363d] bg-[#0d1117]',
 };
 
@@ -57,12 +57,12 @@ export function HabitCard({ habit, focused }: HabitCardProps) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={clsx(
-            'font-medium text-sm',
-            habit.today_state === 'DONE'
-              ? 'text-[#8b949e] line-through'
-              : 'text-[#e6edf3]'
-          )}>
+          <span
+            className={clsx(
+              'font-medium text-sm',
+              habit.today_state === 'DONE' ? 'text-[#8b949e] line-through' : 'text-[#e6edf3]'
+            )}
+          >
             {habit.name}
           </span>
           <CategoryBadge category={habit.category} color={habit.color} />
@@ -75,7 +75,11 @@ export function HabitCard({ habit, focused }: HabitCardProps) {
           </span>
           {habit.logged_at && (
             <span className="text-[11px] text-[#6e7681]">
-              logged {new Date(habit.logged_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              logged{' '}
+              {new Date(habit.logged_at).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </span>
           )}
         </div>
@@ -113,12 +117,12 @@ export function HabitCard({ habit, focused }: HabitCardProps) {
 }
 
 interface ActionBtnProps {
-  label:       string;
-  shortcut:    string;
-  active:      boolean;
+  label: string;
+  shortcut: string;
+  active: boolean;
   activeColor: string;
-  activeBg:    string;
-  onClick:     () => void;
+  activeBg: string;
+  onClick: () => void;
 }
 
 function ActionBtn({ label, shortcut, active, activeColor, activeBg, onClick }: ActionBtnProps) {
@@ -133,7 +137,16 @@ function ActionBtn({ label, shortcut, active, activeColor, activeBg, onClick }: 
           ? 'border-transparent shadow-sm'
           : 'border-[#30363d] text-[#8b949e] bg-transparent hover:text-[#e6edf3] hover:border-[#484f58] opacity-50 hover:opacity-100'
       )}
-      style={active ? { color: activeColor, backgroundColor: activeBg, borderColor: `${activeColor}40`, opacity: 1 } : undefined}
+      style={
+        active
+          ? {
+              color: activeColor,
+              backgroundColor: activeBg,
+              borderColor: `${activeColor}40`,
+              opacity: 1,
+            }
+          : undefined
+      }
     >
       {shortcut}
     </button>

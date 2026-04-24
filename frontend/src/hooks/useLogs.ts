@@ -8,7 +8,7 @@ export const TODAY_KEY = ['logs', 'today'] as const;
 export function useToday(date?: string) {
   return useQuery({
     queryKey: [...TODAY_KEY, date],
-    queryFn:  () => logsApi.getToday(date),
+    queryFn: () => logsApi.getToday(date),
     staleTime: 10_000,
     refetchInterval: 60_000,
   });

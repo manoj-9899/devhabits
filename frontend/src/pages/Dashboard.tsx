@@ -22,12 +22,14 @@ export function Dashboard() {
         <div>
           <h1 className="text-[32px] font-bold text-[#e6edf3] tracking-tight">Overview</h1>
           <p className="text-sm text-[#8b949e] mt-1 font-mono">
-            {format(new Date(), "EEEE, MMMM d · yyyy")}
+            {format(new Date(), 'EEEE, MMMM d · yyyy')}
           </p>
         </div>
         {summary && (
           <div className="flex flex-col items-end">
-            <span className="text-sm font-medium text-[#8b949e] uppercase tracking-wider mb-1">Today Progress</span>
+            <span className="text-sm font-medium text-[#8b949e] uppercase tracking-wider mb-1">
+              Today Progress
+            </span>
             <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-[#30363d] bg-[#161b22]">
               <div className="w-2.5 h-2.5 rounded-full bg-[#238636] shadow-[0_0_8px_#238636]" />
               <span className="text-2xl font-bold font-mono text-[#e6edf3]">
@@ -42,18 +44,15 @@ export function Dashboard() {
       {todayLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-[#161b22] rounded-lg border border-[#30363d] animate-pulse" />
+            <div
+              key={i}
+              className="h-24 bg-[#161b22] rounded-lg border border-[#30363d] animate-pulse"
+            />
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <StatsCard
-            label="Total"
-            value={summary?.total ?? 0}
-            sub="habits"
-            accent="#58a6ff"
-            mono
-          />
+          <StatsCard label="Total" value={summary?.total ?? 0} sub="habits" accent="#58a6ff" mono />
           <StatsCard
             label="Done"
             value={summary?.done ?? 0}
@@ -73,8 +72,11 @@ export function Dashboard() {
             value={`${summary?.completion_pct ?? 0}%`}
             sub="today"
             accent={
-              (summary?.completion_pct ?? 0) >= 80 ? '#3fb950' :
-              (summary?.completion_pct ?? 0) >= 50 ? '#d29922' : '#f85149'
+              (summary?.completion_pct ?? 0) >= 80
+                ? '#3fb950'
+                : (summary?.completion_pct ?? 0) >= 50
+                  ? '#d29922'
+                  : '#f85149'
             }
             mono
           />
@@ -105,7 +107,7 @@ export function Dashboard() {
             <span className="text-xs text-[#8b949e]">· Current vs best</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {topStreaks.map(h => (
+            {topStreaks.map((h) => (
               <StreakCard
                 key={h.id}
                 name={h.name}

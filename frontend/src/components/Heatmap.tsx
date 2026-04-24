@@ -8,7 +8,7 @@ import { format, eachDayOfInterval, subDays, getDay } from 'date-fns';
 import type { HeatmapDay } from '../types';
 
 interface HeatmapProps {
-  data:  HeatmapDay[];
+  data: HeatmapDay[];
   days?: number;
 }
 
@@ -24,33 +24,30 @@ function getIntensity(doneCount: number, maxCount: number): number {
   if (doneCount === 0 || maxCount === 0) return 0;
   const ratio = doneCount / maxCount;
   if (ratio < 0.25) return 1;
-  if (ratio < 0.50) return 2;
+  if (ratio < 0.5) return 2;
   if (ratio < 0.75) return 3;
   return 4;
 }
 
 const WEEK_DAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
-const MONTHS    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function Heatmap({ data, days = 365 }: HeatmapProps) {
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
 
   const { weeks, monthLabels, maxCount } = useMemo(() => {
-    const today   = new Date();
-    const start   = subDays(today, days - 1);
+    const today = new Date();
+    const start = subDays(today, days - 1);
     const allDays = eachDayOfInterval({ start, end: today });
 
     // Build lookup map: dateStr → HeatmapDay
-    const dataMap = new Map(data.map(d => [d.date, d]));
+    const dataMap = new Map(data.map((d) => [d.date, d]));
 
-    const maxCount = Math.max(...data.map(d => d.done_count), 1);
+    const maxCount = Math.max(...data.map((d) => d.done_count), 1);
 
     // Pad the start so week[0] starts on Sunday
     const firstDayOfWeek = getDay(start); // 0=Sun
-    const paddedDays: (Date | null)[] = [
-      ...Array(firstDayOfWeek).fill(null),
-      ...allDays,
-    ];
+    const paddedDays: (Date | null)[] = [...Array(firstDayOfWeek).fill(null), ...allDays];
 
     // Split into weeks (chunks of 7)
     const weeks: (Date | null)[][] = [];
@@ -76,10 +73,10 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
   }, [data, days]);
 
   // Pull dataMap from memo above but we need it in scope:
-  const dataMap = useMemo(() => new Map(data.map(d => [d.date, d])), [data]);
+  const dataMap = useMemo(() => new Map(data.map((d) => [d.date, d])), [data]);
 
   const cellSize = 13;
-  const gap      = 2;
+  const gap = 2;
 
   return (
     <div className="relative">
@@ -119,8 +116,8 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
                   return <div key={di} style={{ width: cellSize, height: cellSize }} />;
                 }
 
-                const dateStr  = format(day, 'yyyy-MM-dd');
-                const dayData  = dataMap.get(dateStr);
+                const dateStr = format(day, 'yyyy-MM-dd');
+                const dayData = dataMap.get(dateStr);
                 const intensity = getIntensity(dayData?.done_count ?? 0, maxCount);
 
                 return (
@@ -128,7 +125,7 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
                     key={di}
                     className="heatmap-cell rounded-[2px] cursor-pointer"
                     style={{
-                      width:  cellSize,
+                      width: cellSize,
                       height: cellSize,
                       backgroundColor: INTENSITY_COLORS[intensity],
                     }}
@@ -165,7 +162,11 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
       {tooltip && (
         <div
           className="fixed z-50 px-2 py-1 rounded text-xs text-[#e6edf3] bg-[#1c2128] border border-[#30363d] pointer-events-none whitespace-nowrap shadow-lg"
-          style={{ left: tooltip.x, top: tooltip.y, transform: 'translateX(-50%) translateY(-100%)' }}
+          style={{
+            left: tooltip.x,
+            top: tooltip.y,
+            transform: 'translateX(-50%) translateY(-100%)',
+          }}
         >
           {tooltip.text}
         </div>

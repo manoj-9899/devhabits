@@ -8,7 +8,7 @@ export const HABITS_KEY = ['habits'] as const;
 export function useHabits(withStreak = false) {
   return useQuery({
     queryKey: [...HABITS_KEY, { withStreak }],
-    queryFn:  () => habitsApi.getAll(withStreak),
+    queryFn: () => habitsApi.getAll(withStreak),
     staleTime: 30_000,
   });
 }

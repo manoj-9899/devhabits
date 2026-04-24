@@ -68,14 +68,14 @@ export function createHabit(data) {
   insertHabit.run(
     id,
     data.name,
-    data.description        ?? '',
-    data.category           ?? 'General',
-    data.color              ?? '#6366f1',
-    data.frequency_type     ?? 'DAILY',
-    data.interval_days      ?? null,
+    data.description ?? '',
+    data.category ?? 'General',
+    data.color ?? '#6366f1',
+    data.frequency_type ?? 'DAILY',
+    data.interval_days ?? null,
     JSON.stringify(data.target_days ?? []),
     data.skip_breaks_streak ? 1 : 0,
-    max_order + 1,
+    max_order + 1
   );
 
   return deserialize(findById.get(id));
@@ -86,18 +86,20 @@ export function updateHabit(id, data) {
   if (!existing) return null;
 
   updateHabitStmt.run(
-    data.name               ?? existing.name,
-    data.description        ?? existing.description,
-    data.category           ?? existing.category,
-    data.color              ?? existing.color,
-    data.frequency_type     ?? existing.frequency_type,
-    data.interval_days      ?? existing.interval_days,
+    data.name ?? existing.name,
+    data.description ?? existing.description,
+    data.category ?? existing.category,
+    data.color ?? existing.color,
+    data.frequency_type ?? existing.frequency_type,
+    data.interval_days ?? existing.interval_days,
     JSON.stringify(data.target_days ?? JSON.parse(existing.target_days)),
     data.skip_breaks_streak !== undefined
-      ? (data.skip_breaks_streak ? 1 : 0)
+      ? data.skip_breaks_streak
+        ? 1
+        : 0
       : existing.skip_breaks_streak,
-    data.sort_order         ?? existing.sort_order,
-    id,
+    data.sort_order ?? existing.sort_order,
+    id
   );
 
   return deserialize(findById.get(id));
@@ -112,8 +114,8 @@ export function archiveHabit(id) {
 function deserialize(row) {
   return {
     ...row,
-    target_days:        JSON.parse(row.target_days || '[]'),
+    target_days: JSON.parse(row.target_days || '[]'),
     skip_breaks_streak: Boolean(row.skip_breaks_streak),
-    archived:           Boolean(row.archived),
+    archived: Boolean(row.archived),
   };
 }
