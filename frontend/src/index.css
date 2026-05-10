@@ -95,10 +95,47 @@ body {
 /* GitHub-style heatmap cells */
 .heatmap-cell {
   border-radius: 2px;
-  transition: all 0.1s ease;
-  cursor: pointer;
+  transition: outline 0.1s ease;
 }
 .heatmap-cell:hover {
   outline: 1px solid #8b949e;
   outline-offset: 1px;
+}
+
+/* ── Accessibility helpers ───────────────────────────────────────────────── */
+
+/* Visually hidden until focused — used for the "Skip to content" link. */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 8px 12px;
+  background: #1f6feb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 0 0 6px 0;
+  transform: translateY(-100%);
+  transition: transform 0.15s ease;
+  z-index: 100;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #58a6ff;
+  outline-offset: 2px;
+}
+
+/* Honor user OS-level preference. Disables all transitions, animations, and
+   smooth scroll so motion-sensitive users get a calm UI. Framer Motion
+   detects this same media query and short-circuits its own animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -46,6 +46,8 @@ const updateHabitStmt = db.prepare(`
 
 const archiveHabitStmt = db.prepare(`UPDATE habits SET archived = 1 WHERE id = ?`);
 
+const unarchiveHabitStmt = db.prepare(`UPDATE habits SET archived = 0 WHERE id = ?`);
+
 // ── Public model functions ─────────────────────────────────────────────────
 
 export function getAllHabits() {
@@ -107,6 +109,12 @@ export function updateHabit(id, data) {
 
 export function archiveHabit(id) {
   const result = archiveHabitStmt.run(id);
+  return result.changes > 0;
+}
+
+/** Restore an archived habit (soft-delete undo). */
+export function unarchiveHabit(id) {
+  const result = unarchiveHabitStmt.run(id);
   return result.changes > 0;
 }
 

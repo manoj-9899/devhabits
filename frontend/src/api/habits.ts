@@ -16,4 +16,6 @@ export const habitsApi = {
     api.put<Habit>(`/habits/${id}`, dto).then((r) => r.data),
 
   archive: (id: string) => api.delete(`/habits/${id}`).then((r) => r.data),
+
+  restore: (id: string) => api.post(`/habits/${id}/restore`).then((r) => r.data),
 };

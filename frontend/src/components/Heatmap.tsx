@@ -1,9 +1,11 @@
 // src/components/Heatmap.tsx
 // ─────────────────────────────────────────────────────────────────────────────
 // GitHub-style contribution heatmap.
-// Renders 52 weeks × 7 days = 364 cells in a grid.
+// Renders ~52 weeks × 7 days (default) in a grid.
+// Tooltip is portaled to body so it cannot be clipped by parent overflow.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { format, eachDayOfInterval, subDays, getDay } from 'date-fns';
 import type { HeatmapDay } from '../types';
 
@@ -35,27 +37,23 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export function Heatmap({ data, days = 365 }: HeatmapProps) {
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
 
-  const { weeks, monthLabels, maxCount } = useMemo(() => {
+  const { weeks, monthLabels, dataMap, maxCount, totalDone } = useMemo(() => {
     const today = new Date();
     const start = subDays(today, days - 1);
     const allDays = eachDayOfInterval({ start, end: today });
 
-    // Build lookup map: dateStr → HeatmapDay
     const dataMap = new Map(data.map((d) => [d.date, d]));
-
     const maxCount = Math.max(...data.map((d) => d.done_count), 1);
+    const totalDone = data.reduce((sum, d) => sum + d.done_count, 0);
 
-    // Pad the start so week[0] starts on Sunday
-    const firstDayOfWeek = getDay(start); // 0=Sun
+    const firstDayOfWeek = getDay(start);
     const paddedDays: (Date | null)[] = [...Array(firstDayOfWeek).fill(null), ...allDays];
 
-    // Split into weeks (chunks of 7)
     const weeks: (Date | null)[][] = [];
     for (let i = 0; i < paddedDays.length; i += 7) {
       weeks.push(paddedDays.slice(i, i + 7));
     }
 
-    // Month label positions
     const monthLabels: { month: string; col: number }[] = [];
     let lastMonth = -1;
     weeks.forEach((week, wi) => {
@@ -69,17 +67,18 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
       }
     });
 
-    return { weeks, monthLabels, maxCount, dataMap };
+    return { weeks, monthLabels, dataMap, maxCount, totalDone };
   }, [data, days]);
-
-  // Pull dataMap from memo above but we need it in scope:
-  const dataMap = useMemo(() => new Map(data.map((d) => [d.date, d])), [data]);
 
   const cellSize = 13;
   const gap = 2;
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      role="img"
+      aria-label={`Contribution graph — ${totalDone} completion${totalDone === 1 ? '' : 's'} across the last ${days} days.`}
+    >
       {/* Month labels */}
       <div className="relative h-5 mb-1 ml-8">
         {monthLabels.map(({ month, col }) => (
@@ -95,7 +94,7 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
 
       <div className="flex gap-1.5">
         {/* Day-of-week labels */}
-        <div className="flex flex-col" style={{ gap: gap }}>
+        <div className="flex flex-col" style={{ gap: gap }} aria-hidden="true">
           {WEEK_DAYS.map((label, i) => (
             <div
               key={i}
@@ -123,7 +122,7 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
                 return (
                   <div
                     key={di}
-                    className="heatmap-cell rounded-[2px] cursor-pointer"
+                    className="heatmap-cell"
                     style={{
                       width: cellSize,
                       height: cellSize,
@@ -131,8 +130,8 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
                     }}
                     onMouseEnter={(e) => {
                       const label = dayData
-                        ? `${dayData.done_count} done · ${format(day, 'MMM d, yyyy')}`
-                        : `Start today · ${format(day, 'MMM d, yyyy')}`;
+                        ? `${dayData.done_count} completion${dayData.done_count === 1 ? '' : 's'} · ${format(day, 'MMM d, yyyy')}`
+                        : `No activity · ${format(day, 'MMM d, yyyy')}`;
                       const rect = (e.target as HTMLElement).getBoundingClientRect();
                       setTooltip({ text: label, x: rect.left + rect.width / 2, y: rect.top - 8 });
                     }}
@@ -146,7 +145,7 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-1.5 mt-3 justify-end">
+      <div className="flex items-center gap-1.5 mt-3 justify-end" aria-hidden="true">
         <span className="text-xs text-[#8b949e]">Less</span>
         {INTENSITY_COLORS.map((color, i) => (
           <div
@@ -158,19 +157,22 @@ export function Heatmap({ data, days = 365 }: HeatmapProps) {
         <span className="text-xs text-[#8b949e]">More</span>
       </div>
 
-      {/* Tooltip */}
-      {tooltip && (
-        <div
-          className="fixed z-50 px-2 py-1 rounded text-xs text-[#e6edf3] bg-[#1c2128] border border-[#30363d] pointer-events-none whitespace-nowrap shadow-lg"
-          style={{
-            left: tooltip.x,
-            top: tooltip.y,
-            transform: 'translateX(-50%) translateY(-100%)',
-          }}
-        >
-          {tooltip.text}
-        </div>
-      )}
+      {/* Tooltip — portaled so it never gets clipped by overflow-hidden parents. */}
+      {tooltip &&
+        createPortal(
+          <div
+            role="tooltip"
+            className="fixed z-[70] px-2 py-1 rounded text-xs text-[#e6edf3] bg-[#1c2128] border border-[#30363d] pointer-events-none whitespace-nowrap shadow-lg"
+            style={{
+              left: tooltip.x,
+              top: tooltip.y,
+              transform: 'translateX(-50%) translateY(-100%)',
+            }}
+          >
+            {tooltip.text}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

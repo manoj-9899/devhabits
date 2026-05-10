@@ -28,3 +28,11 @@ export function useArchiveHabit() {
     onSuccess: () => qc.invalidateQueries({ queryKey: HABITS_KEY }),
   });
 }
+
+export function useRestoreHabit() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => habitsApi.restore(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: HABITS_KEY }),
+  });
+}

@@ -67,6 +67,13 @@ export interface HeatmapDay {
   total_logged: number;
 }
 
+export interface HabitHeatmapDay {
+  habit_id: string;
+  date: string;
+  done_count: number;
+  missed_count: number;
+}
+
 export interface HabitStats {
   id: string;
   name: string;
@@ -98,6 +105,7 @@ export interface CreateHabitDto {
   frequency_type?: FrequencyType;
   interval_days?: number;
   target_days?: string[];
+  skip_breaks_streak?: boolean;
 }
 
 export interface CreateLogDto {

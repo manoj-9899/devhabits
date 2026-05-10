@@ -1,6 +1,8 @@
 // src/components/StatsCard.tsx
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
+import { Card } from './ui/Card';
+import { AnimatedNumber } from './ui/AnimatedNumber';
 
 interface StatsCardProps {
   label: string;
@@ -10,15 +12,37 @@ interface StatsCardProps {
   accent?: string; // hex color
   trend?: 'up' | 'down' | 'neutral';
   mono?: boolean;
+  /** Disable the count-up animation (e.g. when value is a name string). */
+  staticValue?: boolean;
   className?: string;
 }
 
-export function StatsCard({ label, value, sub, icon, accent, mono, className }: StatsCardProps) {
+export function StatsCard({
+  label,
+  value,
+  sub,
+  icon,
+  accent,
+  mono,
+  staticValue,
+  className,
+}: StatsCardProps) {
+  const numeric = typeof value === 'number';
+  const numericFromPct =
+    typeof value === 'string' && /^\d+%$/.test(value) ? parseInt(value, 10) : null;
+
+  const showAnimated = !staticValue && (numeric || numericFromPct !== null);
+  const animValue = numeric ? value : (numericFromPct ?? 0);
+  const formatter =
+    numericFromPct !== null
+      ? (n: number) => `${Math.round(n)}%`
+      : (n: number) => Math.round(n).toString();
+
   return (
-    <div
+    <Card
+      padding="lg"
       className={clsx(
-        'p-5 rounded-xl border border-[#30363d] bg-[#161b22]/80',
-        'flex flex-col gap-3 min-w-0 transition-all duration-200 hover:border-[#484f58] hover:bg-[#161b22]',
+        'flex flex-col gap-3 min-w-0 hover:border-[#484f58] hover:bg-[#161b22]',
         className
       )}
     >
@@ -33,20 +57,24 @@ export function StatsCard({ label, value, sub, icon, accent, mono, className }: 
         )}
       </div>
 
-      <div className="flex items-baseline gap-2">
+      <div className="flex items-baseline gap-2 min-w-0">
         <span
           className={clsx(
-            'text-[32px] font-bold leading-none tracking-tight',
+            'text-[32px] font-bold leading-none tracking-tight truncate',
             mono && 'font-mono tracking-normal',
             !accent && 'text-[#e6edf3]'
           )}
           style={accent ? { color: accent } : undefined}
         >
-          {value}
+          {showAnimated ? (
+            <AnimatedNumber value={animValue} format={formatter} />
+          ) : (
+            value
+          )}
         </span>
         {sub && <span className="text-[13px] text-[#8b949e] font-medium">{sub}</span>}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -61,12 +89,16 @@ export function StreakCard({ current, best, name, color }: StreakCardProps) {
   const pct = best > 0 ? Math.round((current / best) * 100) : 0;
 
   return (
-    <div className="p-5 rounded-xl border border-[#30363d] bg-[#161b22]/80 min-w-0 transition-all duration-200 hover:border-[#484f58] hover:bg-[#161b22]">
+    <Card
+      padding="lg"
+      className="min-w-0 hover:border-[#484f58] hover:bg-[#161b22]"
+    >
       <div className="flex items-start justify-between gap-2 mb-4">
         <div className="flex items-center gap-2.5 min-w-0">
           <div
             className="w-2.5 h-2.5 rounded-full shrink-0"
             style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}60` }}
+            aria-hidden="true"
           />
           <span className="text-[15px] font-semibold text-[#e6edf3] truncate tracking-tight">
             {name}
@@ -77,29 +109,34 @@ export function StreakCard({ current, best, name, color }: StreakCardProps) {
 
       <div className="flex items-center gap-5 mb-4">
         <div>
-          <div className="text-[28px] font-bold font-mono leading-none" style={{ color }}>
-            {current}
-          </div>
+          <AnimatedNumber
+            value={current}
+            className="text-[28px] font-bold font-mono leading-none block"
+          />
           <div className="text-[11px] text-[#8b949e] uppercase tracking-wider mt-1 font-semibold">
             current
           </div>
         </div>
-        <div className="text-[#30363d] text-2xl font-light">/</div>
+        <div className="text-[#30363d] text-2xl font-light" aria-hidden="true">
+          /
+        </div>
         <div>
-          <div className="text-[28px] font-bold font-mono text-[#e6edf3] leading-none">{best}</div>
+          <AnimatedNumber
+            value={best}
+            className="text-[28px] font-bold font-mono text-[#e6edf3] leading-none block"
+          />
           <div className="text-[11px] text-[#8b949e] uppercase tracking-wider mt-1 font-semibold">
             best
           </div>
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="h-1.5 bg-[#21262d] rounded-full overflow-hidden shadow-inner">
         <div
-          className="h-full rounded-full transition-all duration-500 shadow-sm"
+          className="h-full rounded-full transition-all duration-500"
           style={{ width: `${pct}%`, backgroundColor: color }}
         />
       </div>
-    </div>
+    </Card>
   );
 }

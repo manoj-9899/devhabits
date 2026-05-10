@@ -1,11 +1,12 @@
 // src/routes/habits.js
 // ─────────────────────────────────────────────────────────────────────────────
 // Routes:
-//   GET  /api/habits               → list all active habits
-//   POST /api/habits               → create a new habit
-//   GET  /api/habits/:id           → get a single habit by ID
-//   PUT  /api/habits/:id           → update a habit
-//   DELETE /api/habits/:id         → archive a habit (soft delete)
+//   GET    /api/habits               → list all active habits
+//   POST   /api/habits               → create a new habit
+//   GET    /api/habits/:id           → get a single habit by ID
+//   PUT    /api/habits/:id           → update a habit
+//   POST   /api/habits/:id/restore   → restore archived habit (undo soft-delete)
+//   DELETE /api/habits/:id           → archive a habit (soft delete)
 // ─────────────────────────────────────────────────────────────────────────────
 import { Router } from 'express';
 import * as HabitModel from '../models/Habit.js';
@@ -101,6 +102,21 @@ router.post(
 
     const habit = HabitModel.createHabit(req.body);
     sendSuccess(res, habit, 201);
+  })
+);
+
+// ── POST /api/habits/:id/restore ──────────────────────────────────────────────
+// Undo archive — sets archived = 0.
+router.post(
+  '/:id/restore',
+  asyncHandler((req, res) => {
+    const restored = HabitModel.unarchiveHabit(req.params.id);
+
+    if (!restored) {
+      return sendError(res, `Habit "${req.params.id}" not found.`, 404, 'NOT_FOUND');
+    }
+
+    sendSuccess(res, { message: 'Habit restored successfully.' });
   })
 );
 

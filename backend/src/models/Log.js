@@ -67,6 +67,19 @@ const heatmapQuery = db.prepare(`
   ORDER BY date ASC
 `);
 
+const heatmapByHabitQuery = db.prepare(`
+  SELECT
+    l.habit_id,
+    l.date,
+    COUNT(CASE WHEN l.state = 'DONE'   THEN 1 END) AS done_count,
+    COUNT(CASE WHEN l.state = 'MISSED' THEN 1 END) AS missed_count
+  FROM logs l
+  INNER JOIN habits h ON h.id = l.habit_id
+  WHERE l.date >= ? AND l.date <= ? AND h.archived = 0
+  GROUP BY l.habit_id, l.date
+  ORDER BY l.habit_id ASC, l.date ASC
+`);
+
 const statsAllHabits = db.prepare(`
   SELECT
     h.id,
@@ -128,6 +141,14 @@ export function getLogsByHabit(habitId) {
  */
 export function getHeatmapData(from, to) {
   return heatmapQuery.all(from, to);
+}
+
+/**
+ * Per-habit daily heatmap data between two dates.
+ * Returns rows already grouped by (habit_id, date).
+ */
+export function getHeatmapByHabit(from, to) {
+  return heatmapByHabitQuery.all(from, to);
 }
 
 /**
