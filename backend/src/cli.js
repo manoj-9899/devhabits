@@ -90,6 +90,71 @@ function printFooterHints() {
   if (hint) console.log(hint);
 }
 
+// ── First-run interactive seeding ────────────────────────────────────────────
+// Three suggestions cover different motivation styles (build, health, mind).
+// Each is created with a sensible default color so it shows up styled in the
+// dashboard and CLI immediately.
+const STARTER_HABITS = [
+  { name: 'Code 1 hour',     category: 'Work',     color: '#a371f7' },
+  { name: 'Drink 2L water',  category: 'Health',   color: '#3fb950' },
+  { name: 'Read 30 minutes', category: 'Learning', color: '#58a6ff' },
+];
+
+async function firstRunPrompt() {
+  console.log(chalk.bold("  Welcome — let's start with one habit."));
+  console.log(chalk.gray('  Pick a starter, or type your own:'));
+  console.log('');
+  STARTER_HABITS.forEach((h, i) => {
+    const dot = fmt.tint(h.color)('●');
+    console.log(`    ${chalk.cyan(`[${i + 1}]`)}  ${dot}  ${h.name}  ${chalk.gray(h.category)}`);
+  });
+  console.log(`    ${chalk.cyan('[c]')}  Custom name`);
+  console.log(`    ${chalk.cyan('[s]')}  Skip for now`);
+  console.log('');
+
+  const readline = await import('node:readline/promises');
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  const choice = (await rl.question('  > ')).trim().toLowerCase();
+
+  let toCreate = null;
+  if (choice === 's' || choice === '') {
+    rl.close();
+    console.log('');
+    console.log(chalk.gray('  No problem. Add one anytime with: ') + chalk.cyan('habit add "Name"'));
+    console.log('');
+    return;
+  } else if (choice === 'c') {
+    const name = (await rl.question('  Habit name: ')).trim();
+    if (!name) {
+      rl.close();
+      console.log(chalk.gray('  No name given — skipping.'));
+      return;
+    }
+    toCreate = { name, category: 'General' };
+  } else {
+    const idx = parseInt(choice, 10) - 1;
+    if (idx >= 0 && idx < STARTER_HABITS.length) {
+      toCreate = STARTER_HABITS[idx];
+    } else {
+      rl.close();
+      console.log(chalk.red(`  Didn't recognise "${choice}". Try again with: habit`));
+      return;
+    }
+  }
+  rl.close();
+
+  const habit = HabitModel.createHabit(toCreate);
+  console.log('');
+  console.log(
+    `  ${fmt.tint(habit.color)('●')}  ${chalk.green('Created')} ${chalk.bold(habit.name)}`
+  );
+  console.log(
+    chalk.gray('  Log it whenever you finish it: ') +
+      chalk.cyan(`habit done ${habit.name.split(' ')[0].toLowerCase()}`)
+  );
+  console.log('');
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Command: `list` (default) — the daily dashboard
 // ─────────────────────────────────────────────────────────────────────────────
@@ -103,7 +168,7 @@ program
 program
   .command('list', { isDefault: true })
   .description("List all active habits and today's status")
-  .action(() => {
+  .action(async () => {
     const today = getToday();
     const habits = LogModel.getTodayHabits(today);
 
@@ -112,6 +177,13 @@ program
     console.log('');
 
     if (habits.length === 0) {
+      // First-run: in an interactive TTY, offer to seed a starter habit so
+      // brand-new users have something to log immediately. Falls back to the
+      // static empty-state for piped/non-interactive contexts (CI, etc.).
+      if (process.stdin.isTTY && process.stdout.isTTY) {
+        await firstRunPrompt();
+        return;
+      }
       console.log(fmt.emptyStateBlock());
       printFooterHints();
       return;

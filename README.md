@@ -51,11 +51,13 @@
    cd devhabits
    ```
 
-2. **Automated Setup**
-   Run the setup script to install all dependencies and link the CLI globally.
+2. **Bootstrap**
+   One command, cross-platform — verifies Node, installs everything, links the CLI, and runs a health check.
    ```bash
-   npm run setup
+   npm run bootstrap
    ```
+   > Calls `scripts/bootstrap.ps1` on Windows or `scripts/bootstrap.sh` on macOS/Linux.
+   > Prefer manual? `npm run setup` is the install-and-link-only equivalent.
 
 3. **Launch the Application**
    Start both the web dashboard and the backend API simultaneously:
@@ -63,6 +65,16 @@
    npm run dev
    ```
    > The web dashboard is now running at **`http://localhost:5173`**.
+
+### Maintenance commands
+
+| Command | What it does |
+| --- | --- |
+| `npm run doctor` | Validate Node version, deps, CLI link, DB path, ports — with OS-specific fix hints. |
+| `npm run db:where` | Print the location of the SQLite database. |
+| `npm run db:reset` | Wipe all habits and logs (with confirmation). Add `-- --yes` to skip the prompt. |
+| `npm run check` | Run lint + production build for the frontend. |
+| `npm run cli:link` | Re-link the global `habit` command if PATH lost it. |
 
 ---
 

@@ -6,10 +6,15 @@
 
 ## One-time setup
 
+The fastest path — verifies Node, installs everything, links the CLI globally, and runs a health check:
+
 ```powershell
 cd "C:\Users\manoj\Desktop\habit tracker"
-npm run setup
+npm run bootstrap
 ```
+
+> Internally calls `scripts\bootstrap.ps1` on Windows or `scripts/bootstrap.sh` on macOS/Linux.
+> If you prefer the manual path: `npm run setup` does the install + link only.
 
 Then **open a fresh PowerShell window** and confirm:
 
@@ -19,6 +24,13 @@ habit --help
 
 > Requires Node.js v22.5.0 or newer. Check with `node --version`.
 > For the best visuals on Windows, use **Windows Terminal** (not legacy `cmd.exe`).
+> If the first `habit` shows nothing, it'll offer to seed a starter habit interactively.
+
+### Health check anytime
+
+```powershell
+npm run doctor       # validates Node, deps, CLI link, DB path, ports
+```
 
 ---
 
@@ -121,17 +133,28 @@ Streak flame tier (next to streak number):
 ## If something goes wrong
 
 ```powershell
-# "habit not recognized" → re-link the CLI
-cd "C:\Users\manoj\Desktop\habit tracker\backend"
-npm link
+# Run the diagnostic — it will tell you exactly what's wrong
+npm run doctor
 
-# Wipe everything and start fresh
-Remove-Item "C:\Users\manoj\Desktop\habit tracker\backend\data\devhabits.db*"
+# "habit not recognized" → re-link the CLI
+npm run cli:link
+
+# See where the database actually lives
+npm run db:where
+
+# Wipe everything and start fresh (asks for confirmation)
+npm run db:reset
+# Or skip the prompt: npm run db:reset -- --yes
 
 # Want the web dashboard too? (runs at http://localhost:5173)
-cd "C:\Users\manoj\Desktop\habit tracker"
 npm run dev
 ```
+
+> The database lives in your OS config dir, **not** inside the project folder:
+> - Windows: `%APPDATA%\devhabits\habits.db`
+> - macOS:   `~/Library/Application Support/devhabits/habits.db`
+> - Linux:   `~/.config/devhabits/habits.db`
+> Override with the `DB_PATH` environment variable.
 
 ---
 

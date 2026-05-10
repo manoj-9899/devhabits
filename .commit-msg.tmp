@@ -1,0 +1,33 @@
+feat(setup): one-command bootstrap, doctor diagnostics, and first-run flow
+
+Setup automation
+- npm run bootstrap: cross-platform wrapper that picks bootstrap.ps1
+  on Windows or bootstrap.sh on macOS/Linux. Verifies Node version,
+  installs all workspaces, links the CLI globally, and runs doctor.
+- npm run doctor: validates Node version, workspace shape, installed
+  deps, OS-specific DB path + writability, CLI link presence, and port
+  availability. Exits non-zero with OS-specific fix hints (e.g.
+  Get-NetTCPConnection on Windows, lsof on Unix).
+- npm run db:where / db:reset: surface the actual SQLite location
+  (%APPDATA%, ~/.config, ~/Library) and offer a confirmed wipe with
+  WAL/SHM sidecar cleanup; --yes flag for non-interactive use.
+
+First-run experience
+- When `habit` runs against an empty DB in a TTY, offer an interactive
+  starter prompt with three suggestions (Code 1 hour, Drink 2L water,
+  Read 30 minutes), a custom-name option, or skip. Falls back to the
+  static empty-state for non-TTY contexts.
+
+Quality of life
+- npm run dev now uses `concurrently -n api,web -c cyan,magenta` for
+  prefixed, color-coded logs.
+- New `npm run check`: lint + production build in one shot.
+- Root package.json declared `type: module` to silence Node's typeless
+  package warning when running scripts/.
+
+Docs
+- README: bootstrap step replaces manual setup; new "Maintenance
+  commands" table.
+- CHEATSHEET: corrected the DB reset path (was wrongly pointing at
+  backend/data/, the real location is in the OS config dir);
+  troubleshooting section now uses the new npm scripts.
