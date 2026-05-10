@@ -12,6 +12,8 @@
   <p>
     <a href="#-key-features">Key Features</a> •
     <a href="#-quick-start">Quick Start</a> •
+    <a href="#-cli-usage">CLI Usage</a> •
+    <a href="#%EF%B8%8F-web-dashboard-shortcuts">Shortcuts</a> •
     <a href="#-architecture">Architecture</a> •
     <a href="#-documentation">Documentation</a> •
     <a href="#-contributing">Contributing</a>
@@ -22,11 +24,16 @@
 
 ## ✨ Key Features
 
-- **💻 Dual Interface**: Manage your daily habits directly from the terminal or interact with the sleek web UI simultaneously.
+- **💻 Dual Interface**: Manage your daily habits directly from the terminal or interact with the sleek web UI simultaneously — every change is instantly visible on both surfaces.
 - **🔒 Local-First & Private**: All data is stored locally on your machine in a lightweight SQLite database. No cloud, no subscriptions, no tracking.
 - **⚙️ Zero Database Configuration**: Works out of the box with zero external dependencies using Node.js native SQLite (`--experimental-sqlite`).
 - **⚡ True Concurrency**: Powered by SQLite's WAL mode, the web dashboard and CLI interact with your data concurrently without locking or lagging.
-- **📈 Advanced Analytics**: Real-time streak tracking, completion heatmaps, and habit performance metrics via the React dashboard.
+- **📈 Advanced Analytics**: Real-time streak tracking, GitHub-style heatmaps, weekday consistency bars, and per-habit "fingerprints" via the React dashboard.
+- **🎯 Command Palette**: Press `Ctrl+/` (`Cmd+/` on macOS) anywhere in the web app to fuzzy-search every action — navigation, new habit, archive — without lifting your hands.
+- **⌨️ Keyboard-First UX**: Single-key navigation (`1`–`4`), quick actions (`N` to add, `D`/`S`/`M` to log on the Today page), and a built-in shortcuts dialog (`?`).
+- **🖼 Interactive Terminal UI**: A full-screen TUI mode (`habit ui`) built with Ink — navigate with `j`/`k`, log with `d`/`s`/`m`, no typing habit names.
+- **🌈 Rich CLI Visualizations**: Time-aware greetings, 7-day streak strips per habit, GitHub-style year heatmap (`habit year`), per-habit charts (`habit chart`), and milestone celebration banners on streak hits.
+- **♿ Accessible by Design**: Full keyboard navigation, ARIA landmarks, focus management, skip-to-content link, and `prefers-reduced-motion` support throughout the web app.
 
 ---
 
@@ -61,23 +68,63 @@
 
 ## 💻 CLI Usage
 
-Because the setup script linked the command globally, you can use the CLI from any terminal window on your machine:
+Because the setup script linked the command globally, you can run `habit` from any terminal window. Fuzzy name matching means you don't need to type full habit names.
+
+### Daily ritual
 
 ```bash
-# Add a new habit
-habit add "Code for 1 hour"
-
-# Mark a habit as completed today
-habit done "Code"
-
-# List today's pending habits
-habit list
-
-# View your all-time streaks
-habit stats
+habit                  # Today's dashboard (default command)
+habit done read        # Mark a habit as DONE
+habit skip water       # Skip without breaking the streak
+habit miss workout     # Mark as missed (breaks streak)
 ```
 
-> **Note:** Updates made in the CLI reflect instantly in the Web Dashboard thanks to React Query!
+### Visualizations
+
+```bash
+habit week                  # 7-day grid across all habits
+habit year                  # GitHub-style 365-day activity heatmap
+habit chart "Read 30 min"   # 30-day strip for a single habit
+habit stats                 # All-time completion rate + streaks
+```
+
+### Interactive TUI
+
+For a full-screen experience built with Ink, run:
+
+```bash
+habit ui
+```
+
+| Key | Action |
+| --- | --- |
+| `j` / `↓` · `k` / `↑` | Move selection |
+| `d` / `s` / `m` | Log Done / Skipped / Missed for the selected habit |
+| `r` | Refresh from disk (catches changes made via the web app) |
+| `?` | Toggle help overlay |
+| `q` / `Esc` | Quit |
+
+> **Tip:** On Windows, **Windows Terminal** (not the legacy `cmd.exe`) is recommended for full Unicode + emoji rendering. The CLI detects the legacy console and shows a hint.
+
+For a printable one-page reference, see [CHEATSHEET.md](CHEATSHEET.md).
+
+---
+
+## ⌨️ Web Dashboard Shortcuts
+
+Open the web dashboard (`npm run dev` → <http://localhost:5173>) and try these:
+
+| Keys | Action |
+| --- | --- |
+| **`Ctrl+/`** (`Cmd+/`) | Open the **Command Palette** — fuzzy search any action |
+| `?` | Show all keyboard shortcuts |
+| `N` | New habit |
+| `1` / `2` / `3` / `4` | Jump to Dashboard / Today / Habits / Analytics |
+| `[` | Toggle the sidebar |
+| `D` / `S` / `M` | When a habit card is focused on Today, mark Done / Skip / Miss |
+| `Esc` | Close any open dialog |
+
+Updates made in the CLI reflect instantly in the dashboard, and vice versa.
 
 ---
 
@@ -85,26 +132,39 @@ habit stats
 
 ### Tech Stack
 - **Backend**: Node.js API server utilizing `--experimental-sqlite` for native, dependency-free database management. Express.js for routing.
-- **Frontend**: React Single Page Application (SPA) built with Vite, TypeScript, and Tailwind CSS.
-- **State Management**: React Query (TanStack Query) for optimistic updates and caching, ensuring a zero-lag UI experience.
-- **CLI Tool**: Built with Commander.js and Chalk for a premium terminal experience.
+- **Frontend**: React 19 SPA built with Vite, TypeScript, and Tailwind CSS v4. Framer Motion for animation, Zustand for transient UI state, TanStack Query for server state with optimistic updates.
+- **CLI Tool**: Commander.js + Chalk + cli-table3 for the static commands, **Ink** + **React** for the interactive `habit ui` TUI. The interactive layer is lazy-loaded so the rest of the CLI starts instantly.
+- **Design System**: Custom primitives (`Card`, `Modal`, `Input`, `Select`, `SegmentedControl`, `Toaster`, etc.) plus a unified motion language and design tokens shared across the dashboard and the command palette.
 
 ### Repository Structure
 ```
 .
-├── backend/            # Express API, CLI logic, and SQLite database
-├── frontend/           # React + Vite web dashboard application
-├── docs/               # Advanced documentation and architectural diagrams
-├── package.json        # Root workspace configuration and scripts
-└── README.md           # Project overview (You are here)
+├── backend/
+│   └── src/
+│       ├── api/            # Express routes
+│       ├── cli/            # CLI theme, formatters, and Ink-based TUI
+│       ├── db/             # SQLite connection + migrations
+│       ├── models/         # Habit / Log data access
+│       ├── services/       # Streak engine, etc.
+│       └── cli.js          # CLI entry point (linked as `habit`)
+├── frontend/
+│   └── src/
+│       ├── components/     # UI primitives, layout, modals, palette
+│       ├── hooks/          # TanStack Query hooks
+│       ├── lib/            # Tokens, motion, commands, platform helpers
+│       ├── pages/          # Dashboard, Today, Habits, Analytics
+│       └── store/          # Zustand stores (UI + toasts)
+├── docs/                   # Architecture and workflow docs
+├── CHEATSHEET.md           # One-page CLI reference
+└── README.md               # You are here
 ```
 
 ---
 
 ## 📚 Documentation
 
-For an in-depth understanding of the product, architecture, and deployment, please refer to the files in the `docs/` directory:
-- [Architecture Details](docs/developer_habit_tracker_architecture.md)
+- [**CHEATSHEET.md**](CHEATSHEET.md) — One-page printable terminal reference (setup, daily ritual, every command, interactive keys, troubleshooting).
+- [Architecture Details](docs/developer_habit_tracker_architecture.md) — Deep-dive on the backend, data layer, and streak engine.
 
 ---
 
