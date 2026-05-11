@@ -11,12 +11,13 @@ import './db/migrate.js';
 import app from './app.js';
 
 const PORT = parseInt(process.env.PORT ?? '4224', 10);
+const HOST = process.env.HOST ?? '0.0.0.0';
 
-const server = app.listen(PORT, '127.0.0.1', () => {
+const server = app.listen(PORT, HOST, () => {
   console.log(`
   ╔══════════════════════════════════════╗
   ║  DevHabits API                       ║
-  ║  Listening → http://localhost:${PORT} ║
+  ║  Listening → http://${HOST}:${PORT}   ║
   ╚══════════════════════════════════════╝
   `);
 });

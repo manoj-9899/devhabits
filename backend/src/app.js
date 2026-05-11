@@ -14,10 +14,17 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:4224',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 // ── Middleware ─────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4224'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })

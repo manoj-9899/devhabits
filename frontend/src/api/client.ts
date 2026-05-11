@@ -1,12 +1,15 @@
 // src/api/client.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// Axios instance pre-configured for the local DevHabits API.
-// All calls go to http://localhost:4224/api
+// Axios instance pre-configured for the DevHabits API.
+// Locally this defaults to http://localhost:4224/api.
+// In production, set VITE_API_BASE_URL to your hosted backend URL.
 // ─────────────────────────────────────────────────────────────────────────────
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4224/api';
+
 export const api = axios.create({
-  baseURL: 'http://localhost:4224/api',
+  baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 8000,
 });
