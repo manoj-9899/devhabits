@@ -71,6 +71,8 @@
 | Command | What it does |
 | --- | --- |
 | `npm run doctor` | Validate Node version, deps, CLI link, DB path, ports — with OS-specific fix hints. |
+| `npm run aliases:install` | Install daily shell aliases (`hl`, `hq`, `hm`, `hd`, etc.) and a compact startup brief. |
+| `npm run aliases:remove` | Remove the guarded DevHabits block from your shell profile. |
 | `npm run db:where` | Print the location of the SQLite database. |
 | `npm run db:reset` | Wipe all habits and logs (with confirmation). Add `-- --yes` to skip the prompt. |
 | `npm run check` | Run lint + production build for the frontend. |
@@ -86,10 +88,29 @@ Because the setup script linked the command globally, you can run `habit` from a
 
 ```bash
 habit                  # Today's dashboard (default command)
+habit quick            # Multi-select what you did, then Enter to log all DONE
+habit morning          # Startup-friendly summary of today + yesterday
 habit done read        # Mark a habit as DONE
 habit skip water       # Skip without breaking the streak
 habit miss workout     # Mark as missed (breaks streak)
 ```
+
+### Shell aliases
+
+`npm run bootstrap` and `npm run setup` install a guarded DevHabits block into your shell profile. Restart the terminal, then use:
+
+| Alias | Expands to |
+| --- | --- |
+| `hl` | `habit` |
+| `hq` | `habit quick` |
+| `hm` | `habit morning` |
+| `hui` | `habit ui` |
+| `hd read` | `habit done read` |
+| `hs water` | `habit skip water` |
+| `hx workout` | `habit miss workout` |
+| `hw` / `hy` | `habit week` / `habit year` |
+
+The same guarded block runs `habit morning --compact` whenever a new shell opens. Disable it with `DEVHABITS_NO_MORNING=1`, or remove everything with `npm run aliases:remove`.
 
 ### Visualizations
 

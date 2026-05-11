@@ -66,6 +66,10 @@ try {
 Pop-Location
 
 # ── 4. Doctor ───────────────────────────────────────────────────────────────
+Step "Installing daily shell aliases"
+npm run aliases:install --silent
+
+# ── 5. Doctor ───────────────────────────────────────────────────────────────
 Step "Running 'npm run doctor' to verify the install"
 $doctor = Start-Process -FilePath 'npm' -ArgumentList 'run','doctor','--silent' `
   -NoNewWindow -PassThru -Wait

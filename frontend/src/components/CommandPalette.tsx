@@ -22,9 +22,21 @@ export function CommandPalette() {
 
   const [query, setQuery] = useState('');
   const [activeIdx, setActiveIdx] = useState(0);
+  const [openSnapshot, setOpenSnapshot] = useState(commandPaletteOpen);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const previousActiveRef = useRef<HTMLElement | null>(null);
+
+  // Reset the palette exactly when it transitions closed → open. This is the
+  // React-sanctioned "derive state during render" pattern and avoids the
+  // set-state-in-effect lint rule.
+  if (openSnapshot !== commandPaletteOpen) {
+    setOpenSnapshot(commandPaletteOpen);
+    if (commandPaletteOpen) {
+      setQuery('');
+      setActiveIdx(0);
+    }
+  }
 
   // ── Filtered, sorted, grouped results ───────────────────────────────────
   const filtered = useMemo(() => {
@@ -52,9 +64,6 @@ export function CommandPalette() {
     if (!commandPaletteOpen) return;
 
     previousActiveRef.current = document.activeElement as HTMLElement;
-    setQuery('');
-    setActiveIdx(0);
-
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -68,11 +77,6 @@ export function CommandPalette() {
       previousActiveRef.current?.focus?.();
     };
   }, [commandPaletteOpen]);
-
-  // Reset selection when filter changes.
-  useEffect(() => {
-    setActiveIdx(0);
-  }, [query]);
 
   // Keep the active item visible.
   useEffect(() => {
@@ -148,7 +152,10 @@ export function CommandPalette() {
               <input
                 ref={inputRef}
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setActiveIdx(0);
+                }}
                 placeholder="Type a command or search…"
                 className="flex-1 bg-transparent text-sm text-[#e6edf3] placeholder-[#6e7681] focus:outline-none"
                 aria-label="Search commands"

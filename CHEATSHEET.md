@@ -14,7 +14,7 @@ npm run bootstrap
 ```
 
 > Internally calls `scripts\bootstrap.ps1` on Windows or `scripts/bootstrap.sh` on macOS/Linux.
-> If you prefer the manual path: `npm run setup` does the install + link only.
+> If you prefer the manual path: `npm run setup` does install + link + aliases only.
 
 Then **open a fresh PowerShell window** and confirm:
 
@@ -32,12 +32,35 @@ habit --help
 npm run doctor       # validates Node, deps, CLI link, DB path, ports
 ```
 
+### Installed aliases
+
+`npm run bootstrap` and `npm run setup` install these into your shell profile:
+
+| Alias | Command |
+| --- | --- |
+| `hl` | `habit` |
+| `hq` | `habit quick` |
+| `hm` | `habit morning` |
+| `hui` | `habit ui` |
+| `hd read` | `habit done read` |
+| `hs water` | `habit skip water` |
+| `hx workout` | `habit miss workout` |
+| `hw` / `hy` | `habit week` / `habit year` |
+
+Every new shell also runs `habit morning --compact`. Disable it with `DEVHABITS_NO_MORNING=1`, or remove the whole guarded block with:
+
+```powershell
+npm run aliases:remove
+```
+
 ---
 
 ## Daily ritual (90 seconds total)
 
 ```powershell
 habit                  # See today's dashboard
+habit quick            # Multi-select what you did, hit Enter
+habit morning          # Brief startup summary
 habit done read        # Log things as you finish them
 habit done water
 habit done workout
@@ -55,6 +78,8 @@ habit                  # Confirm you're at 100%
 | Add with category | `habit add "Workout" -c Health` |
 | Add weekly habit | `habit add "Plan week" -f WEEKLY` |
 | Add with custom color | `habit add "Run" --color "#f97316"` |
+| Multi-select DONE logger | `habit quick` |
+| Startup summary | `habit morning` |
 | Mark done | `habit done read` |
 | Skip (legit skip, no streak break) | `habit skip water` |
 | Mark missed | `habit miss workout` |

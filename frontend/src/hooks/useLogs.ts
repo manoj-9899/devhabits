@@ -4,6 +4,7 @@ import { logsApi } from '../api/index';
 import type { CreateLogDto, TodayHabit } from '../types';
 
 export const TODAY_KEY = ['logs', 'today'] as const;
+type TodayData = Awaited<ReturnType<typeof logsApi.getToday>>;
 
 export function useToday(date?: string) {
   return useQuery({
@@ -25,7 +26,7 @@ export function useLogHabit() {
       await qc.cancelQueries({ queryKey: TODAY_KEY });
       const previous = qc.getQueryData(TODAY_KEY);
 
-      qc.setQueryData(TODAY_KEY, (old: any) => {
+      qc.setQueryData<TodayData>(TODAY_KEY, (old) => {
         if (!old) return old;
         return {
           ...old,

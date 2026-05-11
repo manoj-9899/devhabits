@@ -72,7 +72,7 @@ export function Habits() {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [sortKey, setSortKey] = useState<SortKey>('manual');
 
-  const habits = data?.habits ?? [];
+  const habits = useMemo(() => data?.habits ?? [], [data]);
 
   const categories = useMemo(
     () => ['All', ...Array.from(new Set(habits.map((h) => h.category))).sort((a, b) => a.localeCompare(b))],

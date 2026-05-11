@@ -47,12 +47,6 @@ export function Select<T extends string = string>({
 
   useEffect(() => {
     if (!open) return;
-    const idx = options.findIndex((o) => o.value === value);
-    setActiveIndex(idx >= 0 ? idx : 0);
-  }, [open, options, value]);
-
-  useEffect(() => {
-    if (!open) return;
     const onClick = (e: MouseEvent) => {
       const t = e.target as Node;
       if (!buttonRef.current?.contains(t) && !listRef.current?.contains(t)) {
@@ -112,7 +106,13 @@ export function Select<T extends string = string>({
           aria-expanded={open}
           aria-haspopup="listbox"
           disabled={disabled}
-          onClick={() => setOpen((o) => !o)}
+          onClick={() => {
+            if (!open) {
+              const idx = options.findIndex((o) => o.value === value);
+              setActiveIndex(idx >= 0 ? idx : 0);
+            }
+            setOpen((o) => !o);
+          }}
           className={clsx(
             'w-full px-3 py-2 bg-[#0d1117] border border-[#30363d] rounded-md text-sm text-left',
             'flex items-center justify-between gap-2 transition-colors duration-150 cursor-pointer',

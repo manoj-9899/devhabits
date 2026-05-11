@@ -3,7 +3,7 @@
 // Composes the Modal primitive with our form primitives. Single source of
 // rendered chrome — no chance of a duplicate dialog.
 // ─────────────────────────────────────────────────────────────────────────────
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Textarea } from './ui/Textarea';
@@ -85,13 +85,11 @@ export function AddHabitModal() {
   const [submitted, setSubmitted] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
 
-  // Reset form whenever the modal is opened.
-  useEffect(() => {
-    if (addHabitOpen) {
-      setForm(DEFAULT_FORM);
-      setSubmitted(false);
-    }
-  }, [addHabitOpen]);
+  const closeAndReset = () => {
+    closeAddHabit();
+    setForm(DEFAULT_FORM);
+    setSubmitted(false);
+  };
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -131,7 +129,7 @@ export function AddHabitModal() {
     try {
       await createHabit(dto);
       toast.success('Habit created', `“${dto.name}” is ready to track.`);
-      closeAddHabit();
+      closeAndReset();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Please try again.';
       toast.error('Could not create habit', message);
@@ -141,7 +139,7 @@ export function AddHabitModal() {
   return (
     <Modal
       open={addHabitOpen}
-      onClose={closeAddHabit}
+      onClose={closeAndReset}
       title="New habit"
       subtitle="Track something consistently"
       size="lg"
@@ -149,7 +147,7 @@ export function AddHabitModal() {
       ariaLabel="Create a new habit"
       footer={
         <>
-          <Button variant="ghost" type="button" onClick={closeAddHabit} disabled={isPending}>
+          <Button variant="ghost" type="button" onClick={closeAndReset} disabled={isPending}>
             Cancel
           </Button>
           <Button

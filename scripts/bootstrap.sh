@@ -68,6 +68,10 @@ step "Linking the 'habit' command globally"
 )
 
 # ── 4. Doctor ───────────────────────────────────────────────────────────────
+step "Installing daily shell aliases"
+npm run aliases:install --silent
+
+# ── 5. Doctor ───────────────────────────────────────────────────────────────
 step "Running 'npm run doctor' to verify the install"
 if ! npm run doctor --silent; then
   warn "doctor reported issues — see the output above."

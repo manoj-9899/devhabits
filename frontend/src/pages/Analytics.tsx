@@ -30,7 +30,7 @@ export function Analytics() {
   const { data: byHabit } = useHeatmapByHabit(90);
   const { data: stats, isLoading: statsLoading } = useStats();
 
-  const habits = stats?.habits ?? [];
+  const habits = useMemo(() => stats?.habits ?? [], [stats]);
 
   // ── Top-level aggregates ────────────────────────────────────────────────────
   const totalDone = habits.reduce((sum, h) => sum + h.total_done, 0);

@@ -460,6 +460,108 @@ program
   });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Command: `quick` — multi-select DONE logger
+// ─────────────────────────────────────────────────────────────────────────────
+program
+  .command('quick')
+  .description('Interactive multi-select logger for today (Space to select, Enter to log)')
+  .action(async () => {
+    if (!process.stdout.isTTY || !process.stdin.isTTY) {
+      console.error(chalk.red('Error: `habit quick` needs an interactive terminal.'));
+      process.exit(1);
+    }
+    try {
+      const { runQuickLog } = await import('./cli/quick.js');
+      await runQuickLog();
+    } catch (err) {
+      console.error(chalk.red('Failed to launch quick logger:'));
+      console.error(chalk.gray(err?.message ?? err));
+      process.exit(1);
+    }
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Command: `morning` — shell-startup-friendly daily summary
+// ─────────────────────────────────────────────────────────────────────────────
+program
+  .command('morning')
+  .description("Brief startup summary: today's pending work + yesterday's wins")
+  .option('--compact', 'One-screen version for shell startup profiles')
+  .action((options) => {
+    const today = getToday();
+    const yesterday = subtractDays(today, 1);
+    const todayHabits = LogModel.getTodayHabits(today);
+    const yesterdayHabits = LogModel.getTodayHabits(yesterday);
+
+    const pending = todayHabits.filter((habit) => habit.today_state === 'PENDING');
+    const atRisk = pending.filter(isAtRisk);
+    const doneYesterday = yesterdayHabits.filter((habit) => habit.today_state === 'DONE');
+    const missedYesterday = yesterdayHabits.filter((habit) => habit.today_state === 'MISSED');
+    const skippedYesterday = yesterdayHabits.filter((habit) => habit.today_state === 'SKIPPED');
+    const doneToday = todayHabits.filter((habit) => habit.today_state === 'DONE');
+    const pct = todayHabits.length > 0
+      ? Math.round((doneToday.length / todayHabits.length) * 100)
+      : 0;
+
+    console.log('');
+    console.log(fmt.greeting());
+    console.log('');
+    console.log('  ' + chalk.bold('Morning brief'));
+    console.log(
+      `  ${chalk.cyan(today)}  ${fmt.progressBar(pct, 20)}  ` +
+        chalk.gray(`${doneToday.length}/${todayHabits.length} done today`)
+    );
+
+    if (todayHabits.length === 0) {
+      console.log('');
+      console.log(chalk.gray('  No habits yet. Start with: ') + chalk.cyan('habit add "Read 30 minutes"'));
+      console.log('');
+      return;
+    }
+
+    console.log('');
+    if (pending.length === 0) {
+      console.log(chalk.green('  ✨ Nothing pending today. You are clear.'));
+    } else {
+      const shown = options.compact ? pending.slice(0, 5) : pending;
+      console.log(
+        chalk.yellow(`  ${pending.length} pending today`) +
+          (atRisk.length > 0 ? chalk.gray(` · ${atRisk.length} streak${atRisk.length === 1 ? '' : 's'} at risk`) : '')
+      );
+      for (const habit of shown) {
+        const streak = calculateStreak(habit.id).current_streak;
+        const risk = atRisk.some((h) => h.id === habit.id);
+        console.log(
+          `    ${fmt.tint(habit.color)('●')} ${chalk.white(habit.name)}` +
+            (risk ? chalk.yellow(`  (${streak}d streak at risk)`) : chalk.gray(`  ${habit.category}`))
+        );
+      }
+      if (shown.length < pending.length) {
+        console.log(chalk.gray(`    …and ${pending.length - shown.length} more. Run `) + chalk.cyan('habit') + chalk.gray('.'));
+      }
+    }
+
+    console.log('');
+    console.log(
+      chalk.gray('  Yesterday: ') +
+        chalk.green(`${doneYesterday.length} done`) +
+        chalk.gray(` · ${skippedYesterday.length} skipped · `) +
+        (missedYesterday.length > 0 ? chalk.red(`${missedYesterday.length} missed`) : chalk.gray(`${missedYesterday.length} missed`))
+    );
+    console.log('');
+    console.log(
+      chalk.gray('  Fast paths: ') +
+        chalk.cyan('habit quick') +
+        chalk.gray(' · ') +
+        chalk.cyan('habit ui') +
+        chalk.gray(' · ') +
+        chalk.cyan('habit week')
+    );
+    console.log('');
+    printFooterHints();
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Command: `ui` — full-screen interactive TUI (Tier 3, lazy-loaded)
 // ─────────────────────────────────────────────────────────────────────────────
 program
