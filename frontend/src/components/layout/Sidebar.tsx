@@ -5,10 +5,11 @@
 //   • Mobile  (<md): off-canvas drawer with backdrop, animated slide-in.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import clsx from 'clsx';
 import { useUIStore } from '../../store/uiStore';
+import { useAuth } from '../../contexts/AuthContext';
 import { DURATION, EASE, modalBackdrop } from '../../lib/motion';
 
 const NAV_ITEMS = [
@@ -140,6 +141,8 @@ interface SidebarBodyProps {
 
 function SidebarBody({ showLabels, onItemClick }: SidebarBodyProps) {
   const { openAddHabit, openShortcuts } = useUIStore();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   return (
     <>
       {/* Logo */}
@@ -157,7 +160,9 @@ function SidebarBody({ showLabels, onItemClick }: SidebarBodyProps) {
         {showLabels && (
           <div>
             <span className="text-sm font-semibold text-[#e6edf3]">DevHabits</span>
-            <div className="text-[10px] text-[#6e7681]">local-first</div>
+            <div className="text-[10px] text-[#6e7681] truncate max-w-[120px]" title={user?.email ?? undefined}>
+              {user?.email ?? 'your account'}
+            </div>
           </div>
         )}
       </div>
@@ -219,6 +224,15 @@ function SidebarBody({ showLabels, onItemClick }: SidebarBodyProps) {
               onClick={() => {
                 onItemClick?.();
                 openShortcuts();
+              }}
+            />
+            <FooterHint
+              kbd="↪"
+              label="sign out"
+              onClick={async () => {
+                onItemClick?.();
+                await signOut();
+                navigate('/login');
               }}
             />
           </div>
