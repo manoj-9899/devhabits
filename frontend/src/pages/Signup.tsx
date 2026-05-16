@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { formatAuthError } from '../lib/authErrors';
 
 export function Signup() {
   const { signUp, configured } = useAuth();
@@ -23,7 +24,7 @@ export function Signup() {
     setLoading(false);
 
     if (signUpError) {
-      setError(signUpError);
+      setError(formatAuthError(signUpError));
       return;
     }
 

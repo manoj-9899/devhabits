@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { formatAuthError } from '../lib/authErrors';
 
 export function Login() {
   const { signIn, configured } = useAuth();
@@ -20,7 +21,7 @@ export function Login() {
     const { error: signInError } = await signIn(email.trim(), password);
     setLoading(false);
     if (signInError) {
-      setError(signInError);
+      setError(formatAuthError(signInError));
       return;
     }
     navigate('/', { replace: true });
