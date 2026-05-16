@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUIStore } from '../store/uiStore';
 import { useHabits, useArchiveHabit, useRestoreHabit } from '../hooks/index';
 import { toast } from '../store/toastStore';
+import { ROUTES } from './routes';
 
 export interface Command {
   id: string;
@@ -39,7 +40,7 @@ export function useCommands(): Command[] {
         group: 'Navigation',
         kbd: ['1'],
         keywords: 'home overview',
-        perform: () => navigate('/'),
+        perform: () => navigate(ROUTES.app),
       },
       {
         id: 'nav-today',
@@ -47,7 +48,7 @@ export function useCommands(): Command[] {
         group: 'Navigation',
         kbd: ['2'],
         keywords: 'inbox log',
-        perform: () => navigate('/today'),
+        perform: () => navigate(ROUTES.today),
       },
       {
         id: 'nav-habits',
@@ -55,7 +56,7 @@ export function useCommands(): Command[] {
         group: 'Navigation',
         kbd: ['3'],
         keywords: 'manage list',
-        perform: () => navigate('/habits'),
+        perform: () => navigate(ROUTES.habits),
       },
       {
         id: 'nav-analytics',
@@ -63,7 +64,7 @@ export function useCommands(): Command[] {
         group: 'Navigation',
         kbd: ['4'],
         keywords: 'stats charts heatmap trends',
-        perform: () => navigate('/analytics'),
+        perform: () => navigate(ROUTES.analytics),
       },
 
       // ── Actions ─────────────────────────────────────────────────────────

@@ -15,6 +15,8 @@ import { Toaster } from '../ui/Toaster';
 import { isMetaPressed, META_KEY_LABEL } from '../../lib/platform';
 import { trackMouseAction, markShortcutUsed } from '../../lib/shortcutNudge';
 import { toast } from '../../store/toastStore';
+import { HostedDemoBanner } from './HostedDemoBanner';
+import { ROUTES } from '../../lib/routes';
 
 const MOBILE_QUERY = '(max-width: 767px)';
 
@@ -72,10 +74,10 @@ export function Shell() {
         openAddHabit();
         return;
       }
-      if (e.key === '1') navigate('/');
-      if (e.key === '2') navigate('/today');
-      if (e.key === '3') navigate('/habits');
-      if (e.key === '4') navigate('/analytics');
+      if (e.key === '1') navigate(ROUTES.app);
+      if (e.key === '2') navigate(ROUTES.today);
+      if (e.key === '3') navigate(ROUTES.habits);
+      if (e.key === '4') navigate(ROUTES.analytics);
       if (e.key === '[') toggleSidebar();
     };
     window.addEventListener('keydown', handler);
@@ -111,7 +113,7 @@ export function Shell() {
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top bar */}
+        <HostedDemoBanner />
         <header className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-[#30363d] bg-[#0d1117] shrink-0 gap-2">
           <button
             onClick={handleMenuClick}

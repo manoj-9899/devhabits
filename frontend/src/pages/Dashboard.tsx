@@ -121,7 +121,7 @@ export function Dashboard() {
                 <span className="text-xs text-[#8b949e]">· Last 365 days</span>
               </div>
               <Link
-                to="/analytics"
+                to="/app/analytics"
                 className="text-xs text-[#8b949e] hover:text-[#58a6ff] transition-colors font-medium"
               >
                 Open analytics →
@@ -147,7 +147,7 @@ export function Dashboard() {
                 </div>
                 {moreStreaks > 0 && (
                   <Link
-                    to="/habits"
+                    to="/app/habits"
                     className="text-xs text-[#8b949e] hover:text-[#58a6ff] transition-colors font-medium"
                   >
                     +{moreStreaks} more in Habits →

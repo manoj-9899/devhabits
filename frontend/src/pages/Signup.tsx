@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { formatAuthError } from '../lib/authErrors';
+import { ROUTES } from '../lib/routes';
 
 export function Signup() {
   const { signUp, configured } = useAuth();
@@ -33,7 +34,7 @@ export function Signup() {
       return;
     }
 
-    navigate('/', { replace: true });
+    navigate(ROUTES.app, { replace: true });
   }
 
   if (!configured) {
@@ -84,7 +85,7 @@ export function Signup() {
 
       <p className="text-center text-sm text-[#8b949e]">
         Already have an account?{' '}
-        <Link to="/login" className="text-[#58a6ff] hover:underline font-medium">
+        <Link to={ROUTES.login} className="text-[#58a6ff] hover:underline font-medium">
           Log in
         </Link>
       </p>

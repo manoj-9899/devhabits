@@ -20,6 +20,7 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
+  signInDemo: () => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -73,6 +74,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   }, []);
 
+  const signInDemo = useCallback(async () => {
+    const email = import.meta.env.VITE_DEMO_EMAIL;
+    const password = import.meta.env.VITE_DEMO_PASSWORD;
+    if (!email || !password) {
+      return { error: 'Demo login is not configured on this deployment.' };
+    }
+    return signIn(email, password);
+  }, [signIn]);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       session,
@@ -82,8 +92,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signUp,
       signOut,
+      signInDemo,
     }),
-    [session, loading, signIn, signUp, signOut]
+    [session, loading, signIn, signUp, signOut, signInDemo]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

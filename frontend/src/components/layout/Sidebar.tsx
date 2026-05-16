@@ -10,11 +10,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import clsx from 'clsx';
 import { useUIStore } from '../../store/uiStore';
 import { useAuth } from '../../contexts/AuthContext';
+import { ROUTES } from '../../lib/routes';
+import { isHostedSite } from '../../lib/siteMode';
 import { DURATION, EASE, modalBackdrop } from '../../lib/motion';
 
 const NAV_ITEMS = [
   {
-    path: '/',
+    path: ROUTES.app,
     label: 'Dashboard',
     kbd: '1',
     icon: (
@@ -27,7 +29,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    path: '/today',
+    path: ROUTES.today,
     label: 'Today',
     kbd: '2',
     icon: (
@@ -38,7 +40,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    path: '/habits',
+    path: ROUTES.habits,
     label: 'Habits',
     kbd: '3',
     icon: (
@@ -49,7 +51,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    path: '/analytics',
+    path: ROUTES.analytics,
     label: 'Analytics',
     kbd: '4',
     icon: (
@@ -161,7 +163,7 @@ function SidebarBody({ showLabels, onItemClick }: SidebarBodyProps) {
           <div>
             <span className="text-sm font-semibold text-[#e6edf3]">DevHabits</span>
             <div className="text-[10px] text-[#6e7681] truncate max-w-[120px]" title={user?.email ?? undefined}>
-              {user?.email ?? 'your account'}
+              {isHostedSite ? 'demo' : user?.email ?? 'local'}
             </div>
           </div>
         )}
@@ -173,7 +175,7 @@ function SidebarBody({ showLabels, onItemClick }: SidebarBodyProps) {
           <NavLink
             key={path}
             to={path}
-            end={path === '/'}
+            end={path === ROUTES.app}
             onClick={onItemClick}
             className={({ isActive }) =>
               clsx(
@@ -232,7 +234,7 @@ function SidebarBody({ showLabels, onItemClick }: SidebarBodyProps) {
               onClick={async () => {
                 onItemClick?.();
                 await signOut();
-                navigate('/login');
+                navigate(isHostedSite ? ROUTES.landing : ROUTES.login);
               }}
             />
           </div>

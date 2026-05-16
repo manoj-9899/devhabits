@@ -1,6 +1,7 @@
 // src/components/auth/AuthLayout.tsx
 import { Link, Outlet } from 'react-router-dom';
 import { Card } from '../ui/Card';
+import { ROUTES } from '../../lib/routes';
 
 export function AuthLayout() {
   return (
@@ -14,7 +15,9 @@ export function AuthLayout() {
           </div>
           <div>
             <h1 className="text-xl font-semibold text-[#e6edf3]">DevHabits</h1>
-            <p className="text-sm text-[#8b949e] mt-1">Sign in to save habits to your account</p>
+            <p className="text-sm text-[#8b949e] mt-1">
+              Web preview · install locally for the real CLI experience
+            </p>
           </div>
         </div>
 
@@ -23,8 +26,8 @@ export function AuthLayout() {
         </Card>
 
         <p className="text-center text-xs text-[#6e7681]">
-          <Link to="/" className="text-[#58a6ff] hover:underline">
-            Back to home
+          <Link to={ROUTES.landing} className="text-[#58a6ff] hover:underline">
+            Back to install guide
           </Link>
         </p>
       </div>
